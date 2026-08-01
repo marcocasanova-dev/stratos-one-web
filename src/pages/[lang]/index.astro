@@ -1,0 +1,357 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Hero from '@components/Hero.astro';
+import SectionHeading from '@components/SectionHeading.astro';
+import AgentCard from '@components/AgentCard.astro';
+import ProjectCard from '@components/ProjectCard.astro';
+import { agents, phases } from '@/data/agents';
+import { orderedProjects, sectorLabels, usedSectors } from '@/data/projects';
+import { SITE, PRINCIPAL, CAREER_START_YEAR } from '@/config';
+import { languages, localizePath, useTranslations, type Lang } from '@i18n/utils';
+
+export function getStaticPaths() {
+  return (Object.keys(languages) as Lang[]).map((lang) => ({
+    params: { lang },
+  }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+
+// Derived so the number in the copy can never go stale.
+const years = new Date().getFullYear() - CAREER_START_YEAR;
+
+const engagements = [
+  {
+    title: t('engage.shape1Title'),
+    duration: t('engage.shape1Duration'),
+    body: t('engage.shape1Body'),
+    agent: t('engage.shape1Agent'),
+  },
+  {
+    title: t('engage.shape2Title'),
+    duration: t('engage.shape2Duration'),
+    body: t('engage.shape2Body'),
+    agent: t('engage.shape2Agent'),
+  },
+  {
+    title: t('engage.shape3Title'),
+    duration: t('engage.shape3Duration'),
+    body: t('engage.shape3Body'),
+    agent: t('engage.shape3Agent'),
+  },
+];
+
+// Rendered as filter chips. `all` is first and selected on load; the rest are
+// only the sectors some project actually claims, so no chip can filter to zero.
+const filters = [
+  { key: 'all', label: t('work.filterAll') },
+  ...usedSectors.map((sector) => ({
+    key: sector,
+    label: sectorLabels[sector][lang],
+  })),
+];
+---
+
+<BaseLayout
+  lang={lang}
+  title={SITE.name}
+  description={t('hero.subtitle')}
+>
+  <Hero lang={lang} />
+
+  {/* ── Agents ─────────────────────────────────────────────────────────── */}
+  <section id="agents" class="container-page scroll-mt-24 py-20 md:py-24">
+    <div class="reveal">
+      <SectionHeading
+        eyebrow={t('agents.eyebrow')}
+        title={t('agents.title')}
+        sub={t('agents.sub')}
+      />
+    </div>
+
+    <div class="reveal mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {agents.map((agent) => <AgentCard agent={agent} lang={lang} />)}
+    </div>
+
+    <div class="reveal mt-8">
+      <a href={localizePath(lang, 'agents')} class="link-accent text-sm">
+        {t('agents.readMore')} →
+      </a>
+    </div>
+  </section>
+
+  {/* ── How it works ───────────────────────────────────────────────────── */}
+  <section id="how" class="scroll-mt-24 border-y border-subtle bg-sunken">
+    <div class="container-page py-20 md:py-24">
+      <div class="reveal">
+        <SectionHeading
+          eyebrow={t('how.eyebrow')}
+          title={t('how.title')}
+          sub={t('how.sub')}
+        />
+      </div>
+
+      <ol class="reveal mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        {
+          phases.map((phase, i) => (
+            <li class="surface-card flex flex-col p-6">
+              <div class="flex items-center gap-3">
+                <span class="phase-step" aria-hidden="true">
+                  {i + 1}
+                </span>
+                <h3 class="text-lg font-bold tracking-tight">
+                  {phase.label[lang]}
+                </h3>
+              </div>
+              <p class="mt-5 flex-1 text-sm leading-relaxed text-secondary">
+                {phase.body[lang]}
+              </p>
+              <p class="mt-5 border-t border-subtle pt-4">
+                <span class="eyebrow text-[11px]">{t('how.led')}</span>
+                <span class="mt-1.5 block font-mono text-sm text-[var(--accent)]">
+                  {phase.agent}
+                </span>
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  {/* ── Portfolio ──────────────────────────────────────────────────────── */}
+  <section id="work" class="container-page scroll-mt-24 py-20 md:py-24">
+    <div class="reveal">
+      <SectionHeading
+        eyebrow={t('work.eyebrow')}
+        title={t('work.title')}
+        sub={t('work.sub')}
+      />
+    </div>
+
+    <div
+      class="reveal mt-10 flex flex-wrap gap-2"
+      role="group"
+      aria-label={t('work.filterLabel')}
+      id="work-filters"
+    >
+      {
+        filters.map((filter) => (
+          <button
+            type="button"
+            class="filter-chip"
+            data-filter={filter.key}
+            aria-pressed={filter.key === 'all' ? 'true' : 'false'}
+          >
+            {filter.label}
+          </button>
+        ))
+      }
+    </div>
+
+    <ul
+      id="work-grid"
+      class="reveal mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3"
+    >
+      {
+        orderedProjects.map((project) => (
+          <li data-sectors={project.sectors.join(' ')}>
+            <ProjectCard project={project} lang={lang} />
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="reveal mt-4 text-sm text-muted" id="work-count" aria-live="polite">
+      {
+        `${orderedProjects.length} ${
+          orderedProjects.length === 1 ? t('work.countOne') : t('work.countMany')
+        }`
+      }
+    </p>
+
+    <div class="reveal mt-8">
+      <a
+        href={`${SITE.portfolio}/${lang}/work`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="link-accent text-sm"
+      >
+        {t('work.viewAll')} ↗
+      </a>
+    </div>
+
+    {/*
+      Progressive enhancement: with no JS every project is visible and the chips
+      simply do nothing. That is the right failure mode for a filter — nothing
+      is hidden behind a control that never ran.
+    */}
+    <script
+      is:inline
+      define:vars={{
+        one: t('work.countOne'),
+        many: t('work.countMany'),
+      }}
+    >
+      (function () {
+        var chips = document.querySelectorAll('#work-filters [data-filter]');
+        var items = document.querySelectorAll('#work-grid > li');
+        var count = document.getElementById('work-count');
+        if (!chips.length || !items.length) return;
+
+        function apply(active) {
+          var shown = 0;
+
+          items.forEach(function (item) {
+            var sectors = (item.getAttribute('data-sectors') || '').split(' ');
+            var visible = active === 'all' || sectors.indexOf(active) !== -1;
+            item.hidden = !visible;
+            if (visible) shown++;
+          });
+
+          chips.forEach(function (chip) {
+            chip.setAttribute(
+              'aria-pressed',
+              String(chip.getAttribute('data-filter') === active)
+            );
+          });
+
+          if (count) {
+            count.textContent = shown + ' ' + (shown === 1 ? one : many);
+          }
+        }
+
+        chips.forEach(function (chip) {
+          chip.addEventListener('click', function () {
+            apply(chip.getAttribute('data-filter') || 'all');
+          });
+        });
+      })();
+    </script>
+  </section>
+
+  {/* ── Who signs off ──────────────────────────────────────────────────── */}
+  <section class="border-y border-subtle bg-sunken">
+    <div class="container-page py-20 md:py-24">
+      <div class="reveal grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)] lg:items-center">
+        <div>
+          <SectionHeading
+            eyebrow={t('principal.eyebrow')}
+            title={t('principal.title')}
+          />
+          <p class="mt-6 max-w-2xl text-lg leading-relaxed text-secondary text-pretty">
+            {t('principal.body')}
+          </p>
+          <p class="mt-7">
+            <a
+              href={`${SITE.portfolio}/${lang}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-secondary"
+            >
+              {t('principal.viewPortfolio')}
+              <span aria-hidden="true">↗</span>
+            </a>
+          </p>
+        </div>
+
+        <aside class="surface-card p-7">
+          <p class="text-lg font-bold tracking-tight">{PRINCIPAL.name}</p>
+          <p class="eyebrow mt-1.5 text-[11px]">{PRINCIPAL.role[lang]}</p>
+
+          <div class="mt-6 border-t border-subtle pt-6">
+            <p class="font-mono text-4xl font-bold tracking-tight">{years}</p>
+            <p class="mt-1 text-sm text-secondary">
+              {t('principal.yearsLabel')}
+            </p>
+          </div>
+
+          <dl class="mt-6 space-y-4">
+            <div>
+              <dt class="eyebrow text-[11px]">
+                {t('principal.locationLabel')}
+              </dt>
+              <dd class="mt-1.5 text-sm text-secondary">
+                {PRINCIPAL.city[lang]}, {PRINCIPAL.country[lang]} · {PRINCIPAL.timezone}
+              </dd>
+            </div>
+            <div>
+              <dt class="eyebrow text-[11px]">{t('principal.stackLabel')}</dt>
+              <dd class="mt-1.5 text-sm leading-relaxed text-secondary">
+                {t('principal.stackValue')}
+              </dd>
+            </div>
+            <div>
+              <dt class="eyebrow text-[11px]">{t('principal.marketsLabel')}</dt>
+              <dd class="mt-1.5 text-sm leading-relaxed text-secondary">
+                {t('principal.marketsValue')}
+              </dd>
+            </div>
+          </dl>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  {/* ── Engagements ────────────────────────────────────────────────────── */}
+  <section class="container-page py-20 md:py-24">
+    <div class="reveal">
+      <SectionHeading
+        eyebrow={t('engage.eyebrow')}
+        title={t('engage.title')}
+      />
+    </div>
+
+    <div class="reveal mt-12 grid gap-5 md:grid-cols-3">
+      {
+        engagements.map((shape) => (
+          <article class="surface-card flex flex-col p-7">
+            <div class="flex items-baseline justify-between gap-3">
+              <h3 class="text-lg font-bold tracking-tight">{shape.title}</h3>
+              <span class="tag">{shape.duration}</span>
+            </div>
+            <p class="mt-5 flex-1 text-sm leading-relaxed text-secondary">
+              {shape.body}
+            </p>
+            <p class="mt-6 border-t border-subtle pt-4 font-mono text-xs text-[var(--accent)]">
+              {shape.agent}
+            </p>
+          </article>
+        ))
+      }
+    </div>
+
+    <p class="reveal mt-8 max-w-2xl text-sm leading-relaxed text-muted">
+      {t('engage.antiAgency')}
+    </p>
+  </section>
+
+  {/* ── Closing CTA ────────────────────────────────────────────────────── */}
+  <section class="container-page pb-8">
+    <div class="reveal surface-card relative overflow-hidden px-6 py-16 md:px-12">
+      <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div
+          class="accent-glow absolute -top-24 left-1/2 h-64 w-[36rem] -translate-x-1/2 rounded-full"
+        >
+        </div>
+      </div>
+
+      <div class="relative">
+        <SectionHeading title={t('cta.title')} sub={t('cta.body')} centered />
+
+        <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <a href={SITE.calendly} target="_blank" rel="noopener noreferrer" class="btn-primary">
+            {t('cta.call')}
+            <span aria-hidden="true">→</span>
+          </a>
+          <a href={`mailto:${SITE.email}`} class="btn-secondary">
+            {t('cta.email')}
+          </a>
+        </div>
+
+        <p class="mt-6 text-center text-sm text-muted">{t('cta.response')}</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

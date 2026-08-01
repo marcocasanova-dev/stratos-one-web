@@ -1,0 +1,112 @@
+---
+import Logo from '@components/Logo.astro';
+import ThemeToggle from '@components/ThemeToggle.astro';
+import LangPicker from '@components/LangPicker.astro';
+import { localizePath, useTranslations, type Lang } from '@i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const home = localizePath(lang);
+// Section anchors live on the landing page; from a subpage they must jump home
+// first, so every href is absolute rather than a bare fragment.
+const links = [
+  { href: `${home}#agents`, label: t('nav.agents') },
+  { href: `${home}#how`, label: t('nav.how') },
+  { href: `${home}#work`, label: t('nav.work') },
+  { href: localizePath(lang, 'contact'), label: t('nav.contact') },
+];
+---
+
+<header
+  class="sticky top-0 z-40 border-b border-subtle bg-[var(--surface)]/80 backdrop-blur-md"
+>
+  <div class="container-page flex h-16 items-center justify-between gap-4">
+    <a href={home} class="transition-opacity hover:opacity-80">
+      <Logo />
+      <span class="sr-only">Stratos One</span>
+    </a>
+
+    <nav class="hidden items-center gap-7 md:flex" aria-label="Main">
+      {
+        links.map((link) => (
+          <a
+            href={link.href}
+            class="text-sm text-secondary transition-colors hover:text-[var(--text-primary)]"
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <LangPicker lang={lang} />
+      <ThemeToggle lang={lang} />
+      <a
+        href={localizePath(lang, 'contact')}
+        class="btn-primary hidden !px-4 !py-2 sm:inline-flex"
+      >
+        {t('nav.cta')}
+      </a>
+      <button
+        type="button"
+        id="menu-toggle"
+        class="grid h-9 w-9 place-items-center rounded-lg border border-subtle text-secondary transition-colors hover:border-[var(--accent)] md:hidden"
+        aria-label={t('nav.menu')}
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+      >
+        <svg
+          class="h-4 w-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-nav" class="hidden border-t border-subtle md:hidden">
+    <nav class="container-page flex flex-col py-3" aria-label="Mobile">
+      {
+        links.map((link) => (
+          <a
+            href={link.href}
+            class="border-b border-subtle py-3 text-sm text-secondary last:border-0 hover:text-[var(--text-primary)]"
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const nav = document.getElementById('mobile-nav');
+
+  toggle?.addEventListener('click', () => {
+    const isOpen = nav?.classList.toggle('hidden') === false;
+    toggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  // Tapping a link inside the sheet should close it — on same-page anchors the
+  // navigation does not repaint the header, so the panel would stay open.
+  nav?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => {
+      nav.classList.add('hidden');
+      toggle?.setAttribute('aria-expanded', 'false');
+    });
+  });
+</script>

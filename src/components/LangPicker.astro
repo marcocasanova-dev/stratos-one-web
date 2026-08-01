@@ -1,0 +1,42 @@
+---
+import { languages, switchLangPath, useTranslations, type Lang } from '@i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const codes = Object.keys(languages) as Lang[];
+---
+
+{/*
+  Three locales, so a segmented control still beats a dropdown: every option
+  stays visible and switching is one tap rather than open-then-choose. Past
+  four or five this stops fitting the header and should become a menu.
+*/}
+<nav
+  class="flex items-center rounded-lg border border-subtle p-0.5"
+  aria-label={t('lang.switch')}
+>
+  {
+    codes.map((code) => {
+      const isActive = code === lang;
+      return (
+        <a
+          href={switchLangPath(Astro.url, code)}
+          hreflang={code}
+          aria-current={isActive ? 'true' : undefined}
+          class:list={[
+            'rounded-md px-2 py-1 font-mono text-[0.7rem] uppercase transition-colors',
+            isActive
+              ? 'bg-[var(--btn-accent)] font-bold text-[var(--btn-accent-ink)]'
+              : 'text-muted hover:text-[var(--text-primary)]',
+          ]}
+        >
+          {code}
+        </a>
+      );
+    })
+  }
+</nav>

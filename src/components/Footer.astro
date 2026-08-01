@@ -1,0 +1,95 @@
+---
+import Logo from '@components/Logo.astro';
+import { SITE, PRINCIPAL } from '@/config';
+import { localizePath, useTranslations, type Lang } from '@i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-24 border-t border-subtle">
+  <div class="container-page py-12">
+    <div class="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+      <div class="max-w-sm">
+        <Logo />
+        <p class="mt-4 text-sm leading-relaxed text-muted">
+          {t('footer.built')}
+        </p>
+        <p class="mt-2 text-sm text-muted">
+          {PRINCIPAL.city[lang]}, {PRINCIPAL.country[lang]} · {PRINCIPAL.timezone}
+        </p>
+      </div>
+
+      <div class="flex flex-wrap gap-x-12 gap-y-6">
+        <nav class="flex flex-col gap-2.5" aria-label="Footer">
+          <a
+            href={`${localizePath(lang)}#agents`}
+            class="text-sm text-secondary hover:text-[var(--text-primary)]"
+            >{t('nav.agents')}</a
+          >
+          <a
+            href={`${localizePath(lang)}#how`}
+            class="text-sm text-secondary hover:text-[var(--text-primary)]"
+            >{t('nav.how')}</a
+          >
+          <a
+            href={`${localizePath(lang)}#work`}
+            class="text-sm text-secondary hover:text-[var(--text-primary)]"
+            >{t('nav.work')}</a
+          >
+          <a
+            href={localizePath(lang, 'agents')}
+            class="text-sm text-secondary hover:text-[var(--text-primary)]"
+            >{t('agentsPage.title')}</a
+          >
+          <a
+            href={localizePath(lang, 'contact')}
+            class="text-sm text-secondary hover:text-[var(--text-primary)]"
+            >{t('nav.contact')}</a
+          >
+        </nav>
+
+        <div class="flex flex-col gap-2.5">
+          <a
+            href={`mailto:${SITE.email}`}
+            class="text-sm text-secondary hover:text-[var(--text-primary)]"
+            >{SITE.email}</a
+          >
+          <a
+            href={SITE.portfolio}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-sm text-secondary hover:text-[var(--text-primary)]"
+            >marcocasanova.de</a
+          >
+          <a
+            href={SITE.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-sm text-secondary hover:text-[var(--text-primary)]"
+            >GitHub</a
+          >
+          <a
+            href={SITE.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-sm text-secondary hover:text-[var(--text-primary)]"
+            >LinkedIn</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="mt-10 flex flex-col gap-2 border-t border-subtle pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p>© {year} {SITE.name}. {t('footer.rights')}</p>
+      <p>{t('footer.principal')}</p>
+    </div>
+  </div>
+</footer>

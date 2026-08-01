@@ -1,0 +1,463 @@
+@import 'tailwindcss';
+
+/*
+ * Dark mode is class-driven (not media-driven) so the header toggle can
+ * override the OS preference. The inline script in BaseLayout sets `.dark`
+ * before first paint. This site is dark-FIRST: with no stored preference the
+ * dark theme wins regardless of OS setting, because the brand surface is a
+ * deep atmosphere and the light theme is the alternate, not the default.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /*
+   * Neutral ramp, pulled toward blue rather than pure grey. Large dark
+   * surfaces at this hue read as depth; untinted greys read as dead pixels.
+   */
+  --color-ink-50: oklch(0.985 0.003 250);
+  --color-ink-100: oklch(0.965 0.005 250);
+  --color-ink-200: oklch(0.92 0.008 252);
+  --color-ink-300: oklch(0.85 0.011 254);
+  --color-ink-400: oklch(0.68 0.015 256);
+  --color-ink-500: oklch(0.55 0.018 258);
+  --color-ink-600: oklch(0.44 0.02 260);
+  --color-ink-700: oklch(0.34 0.022 262);
+  --color-ink-800: oklch(0.245 0.024 264);
+  --color-ink-850: oklch(0.198 0.024 264);
+  --color-ink-900: oklch(0.163 0.023 262);
+  --color-ink-950: oklch(0.126 0.021 260);
+
+  /* Single brand accent — the teal from the Stratos One mark. */
+  --color-accent-200: oklch(0.92 0.09 185);
+  --color-accent-300: oklch(0.87 0.12 187);
+  --color-accent-400: oklch(0.81 0.14 190);
+  --color-accent-500: oklch(0.74 0.15 193);
+  --color-accent-600: oklch(0.64 0.14 196);
+  --color-accent-700: oklch(0.53 0.12 199);
+
+  --font-sans:
+    ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', 'JetBrains Mono', Menlo, Consolas,
+    'Liberation Mono', monospace;
+
+  --text-hero: clamp(2.75rem, 7vw, 5.25rem);
+  --text-section: clamp(1.875rem, 3.8vw, 2.75rem);
+
+  --radius-card: 1rem;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --surface: var(--color-ink-50);
+    --surface-raised: #ffffff;
+    --surface-sunken: var(--color-ink-100);
+    --border-subtle: var(--color-ink-200);
+    --border-strong: var(--color-ink-300);
+    --text-primary: var(--color-ink-900);
+    --text-secondary: var(--color-ink-600);
+    --text-muted: var(--color-ink-500);
+    --accent: var(--color-accent-700);
+    /* Fill for the primary CTA — deep enough to hold near-black text on white. */
+    --btn-accent: var(--color-accent-500);
+    --btn-accent-ink: var(--color-ink-950);
+
+    --elev-1: 0 1px 2px oklch(0.2 0.02 258 / 0.06),
+      0 4px 14px oklch(0.2 0.02 258 / 0.05);
+    --elev-2: 0 2px 4px oklch(0.2 0.02 258 / 0.07),
+      0 14px 34px oklch(0.2 0.02 258 / 0.09);
+    /*
+     * 1px inset top-edge highlight — the catch of light that makes a raised
+     * surface read as lifted rather than merely outlined. Transparent in light
+     * mode so one declaration works in both themes.
+     */
+    --catch: inset 0 1px 0 0 oklch(1 0 0 / 0);
+  }
+
+  .dark {
+    color-scheme: dark;
+    --surface: var(--color-ink-950);
+    --surface-raised: var(--color-ink-900);
+    --surface-sunken: oklch(0.108 0.02 260);
+    --border-subtle: var(--color-ink-800);
+    --border-strong: var(--color-ink-700);
+    --text-primary: var(--color-ink-50);
+    --text-secondary: var(--color-ink-300);
+    --text-muted: var(--color-ink-400);
+    --accent: var(--color-accent-300);
+    --btn-accent: var(--color-accent-300);
+    --btn-accent-ink: var(--color-ink-950);
+
+    --elev-1: 0 1px 2px oklch(0 0 0 / 0.45), 0 4px 14px oklch(0 0 0 / 0.35);
+    --elev-2: 0 2px 4px oklch(0 0 0 / 0.5), 0 14px 34px oklch(0 0 0 / 0.45);
+    --catch: inset 0 1px 0 0 oklch(1 0 0 / 0.07);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Keeps anchored headings clear of the sticky header. */
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--surface);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-accent-400);
+    color: var(--color-ink-950);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  img,
+  video,
+  svg {
+    max-width: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    /*
+     * Zeroing durations alone leaves hover transforms as instant jumps, which
+     * is its own motion problem. Unwind the transforms themselves.
+     */
+    .surface-card:hover,
+    .agent-card:hover,
+    .btn-primary:hover,
+    .btn-secondary:hover {
+      transform: none !important;
+    }
+  }
+}
+
+@layer components {
+  .container-page {
+    width: 100%;
+    max-width: 76rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .container-page {
+      padding-inline: 2rem;
+    }
+  }
+
+  .container-prose {
+    width: 100%;
+    max-width: 46rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  /* Small uppercase mono label used for section eyebrows and metadata keys. */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .surface-card {
+    background-color: var(--surface-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-card);
+    box-shadow: var(--elev-1), var(--catch);
+  }
+
+  /*
+   * Primary action: brand fill with near-black text, contrast-checked in both
+   * themes (>8:1). The accent is deliberately DEEPER in light mode — the same
+   * pale teal that glows on a dark page disappears against white.
+   */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.625rem;
+    padding: 0.8125rem 1.375rem;
+    font-size: 0.875rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    background-color: var(--btn-accent);
+    color: var(--btn-accent-ink);
+    box-shadow: var(--elev-1);
+    transition:
+      transform 200ms var(--ease-out-soft),
+      filter 200ms var(--ease-out-soft);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.06);
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.625rem;
+    border: 1px solid var(--border-strong);
+    padding: 0.8125rem 1.375rem;
+    font-size: 0.875rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+    transition:
+      border-color 200ms var(--ease-out-soft),
+      transform 200ms var(--ease-out-soft);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  /*
+   * Filled rather than outlined: at six chips per card, hairline borders were
+   * the busiest element and diluted the hairline as a structural signal
+   * everywhere else in the system.
+   */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1;
+    padding: 0.35rem 0.55rem;
+    border-radius: 0.375rem;
+    background-color: color-mix(in oklch, var(--text-primary) 7%, transparent);
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+
+  .link-accent {
+    color: var(--accent);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    text-decoration-color: color-mix(in oklch, var(--accent) 40%, transparent);
+    transition: text-decoration-color 150ms var(--ease-out-soft);
+  }
+
+  .link-accent:hover {
+    text-decoration-color: var(--accent);
+  }
+
+  /*
+   * Agent card. Each agent supplies `--agent-hue`; lightness and chroma are
+   * fixed here so six different hues still read as one designed set rather
+   * than a colour accident.
+   */
+  .agent-card {
+    --agent: oklch(0.62 0.13 var(--agent-hue));
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: var(--surface-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-card);
+    box-shadow: var(--elev-1), var(--catch);
+    transition:
+      transform 300ms var(--ease-out-soft),
+      border-color 300ms var(--ease-out-soft),
+      box-shadow 300ms var(--ease-out-soft);
+  }
+
+  .dark .agent-card {
+    --agent: oklch(0.78 0.13 var(--agent-hue));
+  }
+
+  .agent-card:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in oklch, var(--agent) 55%, transparent);
+    box-shadow: var(--elev-2), var(--catch);
+  }
+
+  /* Hue wash across the top edge — identifies the agent before the name is read. */
+  .agent-card::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--agent) 30%,
+      var(--agent) 70%,
+      transparent
+    );
+    opacity: 0.75;
+  }
+
+  .agent-glyph {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.75rem;
+    color: var(--agent);
+    background-color: color-mix(in oklch, var(--agent) 12%, transparent);
+    border: 1px solid color-mix(in oklch, var(--agent) 28%, transparent);
+  }
+
+  /*
+   * Sector filter chip. Same footprint pressed or not — the pressed state is a
+   * fill change, never a size or weight change, so selecting a filter cannot
+   * reflow the row of chips underneath the cursor.
+   */
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    padding: 0.5rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    background-color: transparent;
+    cursor: pointer;
+    transition:
+      border-color 180ms var(--ease-out-soft),
+      color 180ms var(--ease-out-soft),
+      background-color 180ms var(--ease-out-soft);
+  }
+
+  .filter-chip:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+  }
+
+  .filter-chip[aria-pressed='true'] {
+    background-color: var(--btn-accent);
+    border-color: var(--btn-accent);
+    color: var(--btn-accent-ink);
+  }
+
+  /* Numbered step marker for the phase sequence. */
+  .phase-step {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    flex: none;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--btn-accent-ink);
+    background-color: var(--btn-accent);
+  }
+
+  /* Fades sections in on scroll; `.is-visible` is applied by the IO in BaseLayout. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 650ms var(--ease-out-soft),
+      transform 650ms var(--ease-out-soft);
+  }
+
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+@layer utilities {
+  .text-secondary {
+    color: var(--text-secondary);
+  }
+  .text-muted {
+    color: var(--text-muted);
+  }
+  .border-subtle {
+    border-color: var(--border-subtle);
+  }
+  .bg-raised {
+    background-color: var(--surface-raised);
+  }
+  .bg-sunken {
+    background-color: var(--surface-sunken);
+  }
+
+  /*
+   * The sector filter hides cards with the `hidden` attribute. Preflight's
+   * `[hidden] { display: none }` already covers it, but it sits in the base
+   * layer and would lose to any display utility a grid item picks up later.
+   * Restating it here — same layer as those utilities, higher specificity —
+   * makes the hide independent of what classes the list item ends up with.
+   */
+  #work-grid > li[hidden] {
+    display: none;
+  }
+
+  /*
+   * Atmospheric backdrop: a fading grid plus two offset accent glows.
+   * Decorative only — always paired with aria-hidden and pointer-events-none
+   * so it can never intercept a CTA.
+   */
+  .backdrop-grid {
+    background-image: linear-gradient(
+        to right,
+        var(--border-subtle) 1px,
+        transparent 1px
+      ),
+      linear-gradient(to bottom, var(--border-subtle) 1px, transparent 1px);
+    background-size: 60px 60px;
+    -webkit-mask-image: radial-gradient(
+      ellipse 72% 62% at 50% 0%,
+      black,
+      transparent
+    );
+    mask-image: radial-gradient(ellipse 72% 62% at 50% 0%, black, transparent);
+  }
+
+  .accent-glow {
+    background-color: var(--color-accent-500);
+    filter: blur(120px);
+    opacity: 0.16;
+  }
+
+  .dark .accent-glow {
+    opacity: 0.22;
+  }
+}

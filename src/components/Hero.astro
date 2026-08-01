@@ -1,0 +1,122 @@
+---
+import { PROOF } from '@/config';
+import { agents } from '@/data/agents';
+import { localizePath, useTranslations, type Lang } from '@i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section class="relative overflow-hidden">
+  {/* Decorative atmosphere. pointer-events-none so it can never block a CTA. */}
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div class="backdrop-grid absolute inset-0 opacity-60"></div>
+    <div
+      class="accent-glow absolute -top-40 left-1/2 h-80 w-[46rem] -translate-x-1/2 rounded-full"
+    >
+    </div>
+    <div class="accent-glow absolute top-40 -right-32 h-72 w-72 rounded-full">
+    </div>
+  </div>
+
+  <div class="container-page pt-16 pb-20 md:pt-24 md:pb-28">
+    <div class="flex items-center gap-2.5">
+      <span class="relative flex h-2 w-2" aria-hidden="true">
+        <span
+          class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-70"
+        ></span>
+        <span
+          class="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)]"
+        ></span>
+      </span>
+      <p class="eyebrow">{t('hero.eyebrow')}</p>
+    </div>
+
+    <h1
+      class="mt-7 max-w-4xl text-[length:var(--text-hero)] leading-[0.98] font-bold tracking-[-0.04em] text-balance"
+    >
+      {t('hero.title')}<br />
+      <span class="text-[var(--accent)]">{t('hero.titleAccent')}</span>
+    </h1>
+
+    <p class="mt-7 max-w-2xl text-lg leading-relaxed text-secondary text-pretty">
+      {t('hero.subtitle')}
+    </p>
+
+    <div class="mt-9 flex flex-wrap items-center gap-3">
+      <a href={localizePath(lang, 'contact')} class="btn-primary">
+        {t('hero.ctaCall')}
+        <span aria-hidden="true">→</span>
+      </a>
+      <a href="#agents" class="btn-secondary">{t('hero.ctaAgents')}</a>
+    </div>
+
+    {/*
+      The roster as a chip strip. It is the fastest way to make "choose your
+      agent" concrete before the reader has scrolled to the grid.
+    */}
+    <ul class="mt-12 flex flex-wrap gap-2" aria-label={t('agents.eyebrow')}>
+      {
+        agents.map((agent) => (
+          <li>
+            <a
+              href="#agents"
+              class="agent-glyph !h-auto !w-auto gap-2 !rounded-full px-3 py-1.5 text-xs font-semibold transition-transform hover:-translate-y-0.5"
+              style={`--agent-hue: ${agent.hue}; --agent: oklch(0.62 0.13 ${agent.hue})`}
+            >
+              <svg
+                class="h-3.5 w-3.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d={agent.icon} />
+              </svg>
+              {agent.name}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="mt-8 text-sm text-muted">{t('hero.note')}</p>
+
+    <dl
+      class="mt-10 grid gap-6 border-t border-subtle pt-9 sm:grid-cols-3 sm:gap-8"
+    >
+      {
+        PROOF.map((stat) => (
+          <div>
+            <dt class="sr-only">{stat.label[lang]}</dt>
+            <dd>
+              <span class="font-mono text-4xl font-bold tracking-tight">
+                {stat.value}
+              </span>
+              <p class="mt-1.5 text-sm font-semibold">{stat.label[lang]}</p>
+              <p class="mt-1.5 text-sm leading-relaxed text-muted">
+                {stat.detail[lang]}
+              </p>
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
+
+<style>
+  /* The hero chips reuse .agent-glyph, which is a fixed-size grid cell. These
+     overrides turn it into an inline pill without forking the base component. */
+  .agent-glyph {
+    display: inline-flex;
+    align-items: center;
+  }
+</style>

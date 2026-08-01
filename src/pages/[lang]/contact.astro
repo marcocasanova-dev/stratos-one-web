@@ -1,0 +1,109 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import SectionHeading from '@components/SectionHeading.astro';
+import { SITE, PRINCIPAL } from '@/config';
+import { languages, useTranslations, type Lang } from '@i18n/utils';
+
+export function getStaticPaths() {
+  return (Object.keys(languages) as Lang[]).map((lang) => ({
+    params: { lang },
+  }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+
+const channels = [
+  {
+    title: t('contact.directTitle'),
+    desc: SITE.email,
+    href: `mailto:${SITE.email}`,
+    cta: t('cta.email'),
+    external: false,
+  },
+  {
+    title: t('contact.callTitle'),
+    desc: t('contact.callDesc'),
+    href: SITE.calendly,
+    cta: t('cta.call'),
+    external: true,
+  },
+  {
+    title: t('contact.principalTitle'),
+    desc: t('contact.principalDesc'),
+    // The portfolio site runs the same three locales, so send the visitor to
+    // theirs rather than dropping them on its English root.
+    href: `${SITE.portfolio}/${lang}`,
+    cta: t('principal.viewPortfolio'),
+    external: true,
+  },
+];
+---
+
+<BaseLayout
+  lang={lang}
+  title={t('contact.title')}
+  description={t('contact.sub')}
+>
+  <section class="relative overflow-hidden">
+    <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+      <div class="backdrop-grid absolute inset-0 opacity-50"></div>
+      <div
+        class="accent-glow absolute -top-32 left-1/2 h-64 w-[38rem] -translate-x-1/2 rounded-full"
+      >
+      </div>
+    </div>
+
+    <div class="container-page py-16 md:py-24">
+      <SectionHeading
+        eyebrow={t('contact.title')}
+        title={t('contact.heading')}
+        sub={t('contact.sub')}
+      />
+
+      <div class="mt-12 grid gap-5 md:grid-cols-3">
+        {
+          channels.map((channel) => (
+            <article class="surface-card flex flex-col p-7">
+              <h2 class="text-lg font-bold tracking-tight">{channel.title}</h2>
+              <p class="mt-4 flex-1 text-sm leading-relaxed break-words text-secondary">
+                {channel.desc}
+              </p>
+              <p class="mt-6">
+                <a
+                  href={channel.href}
+                  target={channel.external ? '_blank' : undefined}
+                  rel={channel.external ? 'noopener noreferrer' : undefined}
+                  class="link-accent text-sm"
+                >
+                  {channel.cta} {channel.external ? '↗' : '→'}
+                </a>
+              </p>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="mt-12 border-t border-subtle pt-8">
+        <dl class="flex flex-wrap gap-x-12 gap-y-4">
+          <div>
+            <dt class="eyebrow text-[11px]">{t('principal.locationLabel')}</dt>
+            <dd class="mt-1.5 text-sm text-secondary">
+              {PRINCIPAL.city[lang]}, {PRINCIPAL.country[lang]} · {PRINCIPAL.timezone}
+            </dd>
+          </div>
+          <div>
+            <dt class="eyebrow text-[11px]">{t('contact.responseLabel')}</dt>
+            <dd class="mt-1.5 text-sm text-secondary">
+              {t('contact.responseValue')}
+            </dd>
+          </div>
+        </dl>
+
+        <p class="mt-8 max-w-2xl text-sm leading-relaxed text-muted">
+          {t('engage.antiAgency')}
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

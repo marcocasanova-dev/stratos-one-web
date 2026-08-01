@@ -1,0 +1,71 @@
+---
+import type { Agent } from '@/data/agents';
+import { useTranslations, type Lang } from '@i18n/utils';
+
+interface Props {
+  agent: Agent;
+  lang: Lang;
+  /** Adds the shipped-evidence footer. Off on the landing grid, on for /agents. */
+  detailed?: boolean;
+}
+
+const { agent, lang, detailed = false } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<article class="agent-card p-6" style={`--agent-hue: ${agent.hue}`}>
+  <div class="flex items-start gap-4">
+    <span class="agent-glyph flex-none">
+      <svg
+        class="h-5 w-5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d={agent.icon}></path>
+      </svg>
+    </span>
+    <div class="min-w-0">
+      <h3 class="text-lg leading-tight font-bold tracking-tight">
+        {agent.name}
+      </h3>
+      <p class="eyebrow mt-1.5 text-[11px]">{agent.role[lang]}</p>
+    </div>
+  </div>
+
+  <p class="mt-5 text-sm leading-relaxed text-secondary">
+    {agent.summary[lang]}
+  </p>
+
+  <div class="mt-5">
+    <p class="eyebrow text-[11px]">{t('agents.does')}</p>
+    <ul class="mt-3 space-y-2">
+      {
+        agent.does[lang].map((item) => (
+          <li class="flex gap-2.5 text-sm text-secondary">
+            <span
+              class="mt-[0.45rem] h-1 w-1 flex-none rounded-full bg-[var(--agent)]"
+              aria-hidden="true"
+            />
+            <span class="leading-relaxed">{item}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  {
+    detailed && (
+      <div class="mt-6 rounded-xl border border-subtle bg-sunken p-4">
+        <p class="eyebrow text-[11px]">{t('agents.proof')}</p>
+        <p class="mt-2 text-sm leading-relaxed text-secondary">
+          {agent.proof[lang]}
+        </p>
+      </div>
+    )
+  }
+</article>

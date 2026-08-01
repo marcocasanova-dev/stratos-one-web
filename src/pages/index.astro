@@ -1,0 +1,67 @@
+---
+/**
+ * Locale gateway. Static build, so there is no server redirect available:
+ * a meta refresh covers crawlers and no-JS clients, and the inline script
+ * upgrades German- and Spanish-preferring browsers before the refresh fires.
+ */
+import { SITE } from '@/config';
+import { languages, localeCodes, defaultLang, withBase, type Lang } from '@i18n/utils';
+
+const site = Astro.site ?? new URL(SITE.url);
+const codes = Object.keys(languages) as Lang[];
+
+/** `{ en: '/base/en', es: '/base/es', de: '/base/de' }` — used by both paths below. */
+const routes = Object.fromEntries(
+  codes.map((code) => [code, withBase(`/${code}`)])
+) as Record<Lang, string>;
+
+const fallback = routes[defaultLang];
+---
+
+<!doctype html>
+<html lang={defaultLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content={`0; url=${fallback}`} />
+    <title>{SITE.name}</title>
+    <link rel="canonical" href={new URL(fallback, site)} />
+    {
+      codes.map((code) => (
+        <link
+          rel="alternate"
+          hreflang={localeCodes[code]}
+          href={new URL(routes[code], site)}
+        />
+      ))
+    }
+    <link rel="alternate" hreflang="x-default" href={new URL(fallback, site)} />
+    <meta name="robots" content="noindex" />
+    <script is:inline define:vars={{ routes, fallback }}>
+      (function () {
+        var preferred = (navigator.languages || [navigator.language || 'en'])
+          .map(function (tag) {
+            return String(tag).toLowerCase().split('-')[0];
+          })
+          .find(function (base) {
+            return Object.prototype.hasOwnProperty.call(routes, base);
+          });
+
+        location.replace(preferred ? routes[preferred] : fallback);
+      })();
+    </script>
+  </head>
+  <body>
+    <p>
+      {
+        codes.map((code, i) => (
+          <>
+            {i > 0 && ' — '}
+            <a href={routes[code]} hreflang={code}>
+              {languages[code]}
+            </a>
+          </>
+        ))
+      }
+    </p>
+  </body>
+</html>

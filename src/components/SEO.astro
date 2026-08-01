@@ -1,0 +1,118 @@
+---
+import { SITE, PRINCIPAL } from '@/config';
+import {
+  languages,
+  localeCodes,
+  switchLangPath,
+  withBase,
+  type Lang,
+} from '@i18n/utils';
+
+interface Props {
+  title: string;
+  description: string;
+  lang: Lang;
+  /** Path relative to /public, or an absolute URL. */
+  image?: string;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  lang,
+  image = SITE.ogImage,
+  noindex = false,
+} = Astro.props;
+
+const site = Astro.site ?? new URL(SITE.url);
+// Astro.url.pathname already carries the configured `base` in the built output,
+// so it must not be prefixed again here.
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', site);
+const ogImage = new URL(withBase(image), site);
+
+// One <link rel="alternate"> per locale, plus x-default pointing at English.
+const alternates = (Object.keys(languages) as Lang[]).map((code) => ({
+  code,
+  hreflang: localeCodes[code],
+  href: new URL(switchLangPath(Astro.url, code), site).toString(),
+}));
+
+const fullTitle =
+  title === SITE.name
+    ? `${SITE.name} — ${SITE.tagline[lang]}`
+    : `${title} · ${SITE.name}`;
+
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: SITE.name,
+  url: new URL(withBase(`/${lang}`), site).toString(),
+  description,
+  email: `mailto:${SITE.email}`,
+  areaServed: ['DE', 'AT', 'EU'],
+  serviceType: [
+    'Software architecture consulting',
+    'Mobile and web product development',
+    'Security and compliance review',
+  ],
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: PRINCIPAL.city[lang],
+    addressCountry: 'DE',
+  },
+  founder: {
+    '@type': 'Person',
+    name: PRINCIPAL.name,
+    jobTitle: PRINCIPAL.role[lang],
+    url: SITE.portfolio,
+    sameAs: [SITE.github, SITE.linkedin],
+  },
+  sameAs: [SITE.portfolio, SITE.github, SITE.linkedin],
+};
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+{
+  alternates.map((alt) => (
+    <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+  ))
+}
+<link
+  rel="alternate"
+  hreflang="x-default"
+  href={alternates.find((a) => a.code === 'en')?.href}
+/>
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:locale" content={localeCodes[lang].replace('-', '_')} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<meta name="theme-color" content="#0e1420" />
+
+<link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+<link rel="sitemap" href={withBase('/sitemap-index.xml')} />
+
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify(organizationSchema)}
+  is:inline
+/>
