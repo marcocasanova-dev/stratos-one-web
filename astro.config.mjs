@@ -6,17 +6,20 @@ import tailwindcss from '@tailwindcss/vite';
 /*
  * DEPLOY TARGET
  * ─────────────
- * Defaults to a GitHub Pages *project* site:
- *   https://marcocasanova-dev.github.io/stratos-one-web
+ * Custom domain on GitHub Pages: https://stratos-one.eu
  *
- * To move to a custom domain (e.g. https://stratos.one) change three things
- * together, or canonical URLs and internal links will disagree:
- *   1. SITE_ORIGIN and BASE below (BASE becomes '/')
+ * These four must always agree, or canonical URLs and internal links point at
+ * different places and the mismatch stays invisible until a crawler finds it:
+ *   1. SITE_ORIGIN and BASE below
  *   2. `SITE.url` and `SITE.base` in src/config.ts
- *   3. add public/CNAME containing the bare domain
+ *   3. public/CNAME — the bare domain, no scheme
+ *   4. Settings → Pages → Custom domain on the repo
+ *
+ * public/CNAME rather than the GitHub UI alone: this deploys the `dist/`
+ * artifact via Actions, so the file has to be in public/ to survive into it.
  */
-const SITE_ORIGIN = 'https://marcocasanova-dev.github.io';
-const BASE = '/stratos-one-web';
+const SITE_ORIGIN = 'https://stratos-one.eu';
+const BASE = '/';
 
 export default defineConfig({
   site: SITE_ORIGIN,
@@ -47,10 +50,16 @@ export default defineConfig({
        * `noindex` and exists only to bounce visitors to a locale, so
        * submitting it would earn a "Submitted URL marked noindex" in Search
        * Console and hand /en a duplicate alternate entry.
+       *
+       * Both sides are stripped of trailing slashes before comparing. With a
+       * project base ('/stratos-one-web') only the page needed it; at the root
+       * of a custom domain BASE is itself '/', so comparing unnormalised would
+       * silently stop matching and let the noindex root back into the sitemap.
        */
       filter: (page) =>
         !page.includes('/404') &&
-        page.replace(/\/$/, '') !== `${SITE_ORIGIN}${BASE}`,
+        page.replace(/\/+$/, '') !==
+          `${SITE_ORIGIN}${BASE}`.replace(/\/+$/, ''),
     }),
   ],
 

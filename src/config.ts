@@ -7,9 +7,9 @@ import { projects } from '@/data/projects';
 
 export const SITE = {
   /** Origin only — must match `site` in astro.config.mjs. */
-  url: 'https://marcocasanova-dev.github.io',
-  /** Must match `base` in astro.config.mjs. Use '/' for a custom domain. */
-  base: '/stratos-one-web',
+  url: 'https://stratos-one.eu',
+  /** Must match `base` in astro.config.mjs. '/' because this is a custom domain. */
+  base: '/',
   name: 'Stratos One',
   tagline: {
     en: 'Choose your agent. Ship your business.',
