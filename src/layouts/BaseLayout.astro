@@ -11,6 +11,7 @@ interface Props {
   lang: Lang;
   image?: string;
   noindex?: boolean;
+  offerCatalog?: boolean;
 }
 
 const { lang, ...seo } = Astro.props;
@@ -25,9 +26,15 @@ const t = useTranslations(lang);
       Runs before first paint so the correct theme is applied without a flash.
       Kept inline and un-bundled deliberately — a deferred script would be too
       late. Note the default: dark unless the visitor explicitly chose light.
+
+      It also stamps `.js` on <html>, which is what gates the scroll reveal in
+      global.css. Content is visible by default and only becomes animatable once
+      this line has run; if scripting is off or the bundle fails, the page reads
+      normally instead of rendering an entire site at opacity: 0.
     */}
     <script is:inline>
       (function () {
+        document.documentElement.classList.add('js');
         try {
           var stored = localStorage.getItem('theme');
           if (stored !== 'light') {

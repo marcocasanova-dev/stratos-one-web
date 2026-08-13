@@ -1,0 +1,88 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import SectionHeading from '@components/SectionHeading.astro';
+import { SITE, LEGAL, isLegalComplete } from '@/config';
+import { imprintIntro, imprintLabels, LEGAL_UPDATED } from '@/data/legal';
+import { languages, useTranslations, type Lang } from '@i18n/utils';
+
+/*
+ * No paths when LEGAL is incomplete, so the route simply does not exist rather
+ * than existing with holes in it. The footer gates its links on the same flag,
+ * so an unfilled config produces a site with no legal section — never a site
+ * with a legal section that lies.
+ */
+export function getStaticPaths() {
+  if (!isLegalComplete) return [];
+  return (Object.keys(languages) as Lang[]).map((lang) => ({
+    params: { lang },
+  }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+
+const rows = [
+  {
+    label: imprintLabels.provider[lang],
+    lines: [LEGAL.legalName, LEGAL.businessForm].filter(Boolean),
+  },
+  {
+    label: imprintLabels.address[lang],
+    lines: [
+      LEGAL.street,
+      `${LEGAL.postalCode} ${LEGAL.city}`.trim(),
+      LEGAL.country,
+    ].filter(Boolean),
+  },
+  {
+    label: imprintLabels.contact[lang],
+    lines: [SITE.email],
+  },
+  ...(LEGAL.vatId
+    ? [{ label: imprintLabels.vat[lang], lines: [LEGAL.vatId] }]
+    : []),
+  {
+    label: imprintLabels.responsible[lang],
+    lines: [LEGAL.responsibleForContent],
+  },
+];
+---
+
+<BaseLayout
+  lang={lang}
+  title={t('seo.imprintTitle')}
+  description={t('seo.imprintDesc')}
+>
+  <section class="container-page py-16 md:py-24">
+    <div class="max-w-3xl">
+      <SectionHeading level={1} title={t('legal.imprintNav')} sub={imprintIntro[lang]} />
+
+      <dl class="mt-12 space-y-8">
+        {
+          rows.map((row) => (
+            <div class="border-t border-subtle pt-6">
+              <dt class="eyebrow">{row.label}</dt>
+              <dd class="mt-2 space-y-1 text-secondary">
+                {row.lines.map((line) => (
+                  <p>
+                    {line === SITE.email ? (
+                      <a href={`mailto:${SITE.email}`} class="link-accent">
+                        {SITE.email}
+                      </a>
+                    ) : (
+                      line
+                    )}
+                  </p>
+                ))}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <p class="mt-12 text-sm text-muted">
+        {t('legal.lastUpdated')}: <time datetime={LEGAL_UPDATED}>{LEGAL_UPDATED}</time>
+      </p>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,20 +1,26 @@
 ---
 import { SITE, PRINCIPAL } from '@/config';
+import { offers } from '@/data/offers';
 import {
   languages,
   localeCodes,
+  hreflangCodes,
   switchLangPath,
   withBase,
+  useTranslations,
   type Lang,
 } from '@i18n/utils';
 
 interface Props {
+  /** Page title WITHOUT the brand. The brand suffix is appended here, once. */
   title: string;
   description: string;
   lang: Lang;
   /** Path relative to /public, or an absolute URL. */
   image?: string;
   noindex?: boolean;
+  /** Emit the service/offer catalogue. Landing page only — one per site. */
+  offerCatalog?: boolean;
 }
 
 const {
@@ -23,38 +29,49 @@ const {
   lang,
   image = SITE.ogImage,
   noindex = false,
+  offerCatalog = false,
 } = Astro.props;
 
+const t = useTranslations(lang);
 const site = Astro.site ?? new URL(SITE.url);
-// Astro.url.pathname already carries the configured `base` in the built output,
-// so it must not be prefixed again here.
-const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', site);
+
+/*
+ * Trailing slash, to match what the build actually emits (`format: 'directory'`)
+ * and what @astrojs/sitemap lists. This used to strip the slash, so every
+ * canonical pointed at a URL that 301s to the real one — a mismatch that costs
+ * nothing until a crawler decides which of the two to index.
+ */
+const canonicalPath = Astro.url.pathname.replace(/\/*$/, '/');
+const canonical = new URL(canonicalPath, site);
 const ogImage = new URL(withBase(image), site);
 
 // One <link rel="alternate"> per locale, plus x-default pointing at English.
 const alternates = (Object.keys(languages) as Lang[]).map((code) => ({
   code,
-  hreflang: localeCodes[code],
+  hreflang: hreflangCodes[code],
   href: new URL(switchLangPath(Astro.url, code), site).toString(),
 }));
 
-const fullTitle =
-  title === SITE.name
-    ? `${SITE.name} — ${SITE.tagline[lang]}`
-    : `${title} · ${SITE.name}`;
+/*
+ * One separator, one order, every page: "<page> | Stratos One". The page half
+ * carries the keywords, so no page has to fall back to the tagline to say what
+ * it is — which is what produced titles as thin as "Contact".
+ */
+const fullTitle = `${title} | ${SITE.name}`;
 
-const organizationSchema = {
+const serviceSchema: Record<string, unknown> = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
   name: SITE.name,
-  url: new URL(withBase(`/${lang}`), site).toString(),
+  url: new URL(withBase(`/${lang}/`), site).toString(),
   description,
-  email: `mailto:${SITE.email}`,
+  // Raw address — schema.org expects the value, not a mailto: URL.
+  email: SITE.email,
   areaServed: ['DE', 'AT', 'EU'],
   serviceType: [
     'Software architecture consulting',
-    'Mobile and web product development',
-    'Security and compliance review',
+    'Web and mobile product engineering',
+    'Data platform and API engineering',
   ],
   address: {
     '@type': 'PostalAddress',
@@ -70,6 +87,26 @@ const organizationSchema = {
   },
   sameAs: [SITE.portfolio, SITE.github, SITE.linkedin],
 };
+
+/*
+ * The three engagements, and only on the landing page. No `price` is emitted:
+ * the offers carry `price: null` until the owner confirms rates, and an
+ * invented priceRange in structured data is a quote made by a template.
+ */
+if (offerCatalog) {
+  serviceSchema.hasOfferCatalog = {
+    '@type': 'OfferCatalog',
+    name: t('offers.eyebrow'),
+    itemListElement: offers.map((offer) => ({
+      '@type': 'Offer',
+      itemOffered: {
+        '@type': 'Service',
+        name: offer.title[lang],
+        description: offer.body[lang],
+      },
+    })),
+  };
+}
 ---
 
 <meta charset="utf-8" />
@@ -99,7 +136,7 @@ const organizationSchema = {
 <meta property="og:url" content={canonical} />
 <meta property="og:image" content={ogImage} />
 <meta property="og:site_name" content={SITE.name} />
-<meta property="og:locale" content={localeCodes[lang].replace('-', '_')} />
+<meta property="og:locale" content={localeCodes[lang]} />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={fullTitle} />
@@ -113,6 +150,6 @@ const organizationSchema = {
 
 <script
   type="application/ld+json"
-  set:html={JSON.stringify(organizationSchema)}
+  set:html={JSON.stringify(serviceSchema)}
   is:inline
 />

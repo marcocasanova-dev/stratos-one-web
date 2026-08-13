@@ -5,14 +5,18 @@
  * upgrades German- and Spanish-preferring browsers before the refresh fires.
  */
 import { SITE } from '@/config';
-import { languages, localeCodes, defaultLang, withBase, type Lang } from '@i18n/utils';
+import { languages, hreflangCodes, defaultLang, localizePath, type Lang } from '@i18n/utils';
 
 const site = Astro.site ?? new URL(SITE.url);
 const codes = Object.keys(languages) as Lang[];
 
-/** `{ en: '/base/en', es: '/base/es', de: '/base/de' }` — used by both paths below. */
+/**
+ * `{ en: '/base/en/', es: '/base/es/', de: '/base/de/' }` — used by both paths
+ * below. Trailing-slashed so the bounce lands on the final URL instead of
+ * arriving at one that immediately redirects again.
+ */
 const routes = Object.fromEntries(
-  codes.map((code) => [code, withBase(`/${code}`)])
+  codes.map((code) => [code, localizePath(code)])
 ) as Record<Lang, string>;
 
 const fallback = routes[defaultLang];
@@ -29,7 +33,7 @@ const fallback = routes[defaultLang];
       codes.map((code) => (
         <link
           rel="alternate"
-          hreflang={localeCodes[code]}
+          hreflang={hreflangCodes[code]}
           href={new URL(routes[code], site)}
         />
       ))

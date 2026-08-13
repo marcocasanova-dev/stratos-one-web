@@ -13,20 +13,35 @@ export function getStaticPaths() {
 const lang = Astro.params.lang as Lang;
 const t = useTranslations(lang);
 
+/*
+ * Subject prefilled, body deliberately not. A mailto with a body parameter puts
+ * whatever it contains into a URL, into browser history and into the referrer
+ * chain — which is exactly where a description of a production incident should
+ * not go. The four prompts below are rendered as page content instead.
+ */
+const mailto = `mailto:${SITE.email}?subject=${encodeURIComponent(t('contact.emailSubject'))}`;
+
+const prompts = [
+  t('contact.prompt1'),
+  t('contact.prompt2'),
+  t('contact.prompt3'),
+  t('contact.prompt4'),
+];
+
 const channels = [
-  {
-    title: t('contact.directTitle'),
-    desc: SITE.email,
-    href: `mailto:${SITE.email}`,
-    cta: t('cta.email'),
-    external: false,
-  },
   {
     title: t('contact.callTitle'),
     desc: t('contact.callDesc'),
     href: SITE.calendly,
     cta: t('cta.call'),
     external: true,
+  },
+  {
+    title: t('contact.directTitle'),
+    desc: SITE.email,
+    href: mailto,
+    cta: t('cta.email'),
+    external: false,
   },
   {
     title: t('contact.principalTitle'),
@@ -42,8 +57,8 @@ const channels = [
 
 <BaseLayout
   lang={lang}
-  title={t('contact.title')}
-  description={t('contact.sub')}
+  title={t('seo.contactTitle')}
+  description={t('seo.contactDesc')}
 >
   <section class="relative overflow-hidden">
     <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
@@ -55,11 +70,34 @@ const channels = [
     </div>
 
     <div class="container-page py-16 md:py-24">
+      {/* level={1}: this page also shipped with no <h1> in any locale. */}
       <SectionHeading
-        eyebrow={t('contact.title')}
+        level={1}
+        eyebrow={t('nav.contact')}
         title={t('contact.heading')}
         sub={t('contact.sub')}
       />
+
+      {/*
+        A template for the first message. "Describe the problem" is advice; four
+        questions are something a busy CTO can answer in four lines on a phone,
+        which is the difference between an enquiry and an intention to send one.
+      */}
+      <div class="mt-10 max-w-2xl rounded-xl border border-subtle bg-sunken p-6">
+        <p class="eyebrow">{t('contact.promptTitle')}</p>
+        <ol class="mt-4 space-y-2.5">
+          {
+            prompts.map((prompt, i) => (
+              <li class="flex gap-3 text-sm text-secondary">
+                <span class="font-mono text-[var(--accent)]" aria-hidden="true">
+                  {i + 1}.
+                </span>
+                <span class="leading-relaxed">{prompt}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
 
       <div class="mt-12 grid gap-5 md:grid-cols-3">
         {
@@ -87,13 +125,13 @@ const channels = [
       <div class="mt-12 border-t border-subtle pt-8">
         <dl class="flex flex-wrap gap-x-12 gap-y-4">
           <div>
-            <dt class="eyebrow text-[11px]">{t('principal.locationLabel')}</dt>
+            <dt class="eyebrow">{t('principal.locationLabel')}</dt>
             <dd class="mt-1.5 text-sm text-secondary">
               {PRINCIPAL.city[lang]}, {PRINCIPAL.country[lang]} · {PRINCIPAL.timezone}
             </dd>
           </div>
           <div>
-            <dt class="eyebrow text-[11px]">{t('contact.responseLabel')}</dt>
+            <dt class="eyebrow">{t('contact.responseLabel')}</dt>
             <dd class="mt-1.5 text-sm text-secondary">
               {t('contact.responseValue')}
             </dd>
@@ -101,7 +139,7 @@ const channels = [
         </dl>
 
         <p class="mt-8 max-w-2xl text-sm leading-relaxed text-muted">
-          {t('engage.antiAgency')}
+          {t('contact.privacyNote')}
         </p>
       </div>
     </div>

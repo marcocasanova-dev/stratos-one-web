@@ -1,6 +1,6 @@
 ---
 import Logo from '@components/Logo.astro';
-import { SITE, PRINCIPAL } from '@/config';
+import { SITE, PRINCIPAL, isLegalComplete } from '@/config';
 import { localizePath, useTranslations, type Lang } from '@i18n/utils';
 
 interface Props {
@@ -10,6 +10,25 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const year = new Date().getFullYear();
+
+const siteLinks = [
+  { href: localizePath(lang, 'work'), label: t('nav.work') },
+  { href: `${localizePath(lang)}#offers`, label: t('nav.offers') },
+  { href: localizePath(lang, 'capabilities'), label: t('nav.capabilities') },
+  { href: localizePath(lang, 'contact'), label: t('nav.contact') },
+];
+
+/*
+ * Legal links appear only once LEGAL in src/config.ts is complete — the pages
+ * are not generated before then, and a footer link to a page that does not
+ * exist is a worse footer than one without the link.
+ */
+const legalLinks = isLegalComplete
+  ? [
+      { href: localizePath(lang, 'imprint'), label: t('legal.imprintNav') },
+      { href: localizePath(lang, 'privacy'), label: t('legal.privacyNav') },
+    ]
+  : [];
 ---
 
 <footer class="mt-24 border-t border-subtle">
@@ -18,40 +37,25 @@ const year = new Date().getFullYear();
       <div class="max-w-sm">
         <Logo />
         <p class="mt-4 text-sm leading-relaxed text-muted">
-          {t('footer.built')}
-        </p>
-        <p class="mt-2 text-sm text-muted">
           {PRINCIPAL.city[lang]}, {PRINCIPAL.country[lang]} · {PRINCIPAL.timezone}
+        </p>
+        <p class="mt-2 text-sm leading-relaxed text-muted">
+          {t('footer.built')}
         </p>
       </div>
 
       <div class="flex flex-wrap gap-x-12 gap-y-6">
-        <nav class="flex flex-col gap-2.5" aria-label="Footer">
-          <a
-            href={`${localizePath(lang)}#agents`}
-            class="text-sm text-secondary hover:text-[var(--text-primary)]"
-            >{t('nav.agents')}</a
-          >
-          <a
-            href={`${localizePath(lang)}#how`}
-            class="text-sm text-secondary hover:text-[var(--text-primary)]"
-            >{t('nav.how')}</a
-          >
-          <a
-            href={`${localizePath(lang)}#work`}
-            class="text-sm text-secondary hover:text-[var(--text-primary)]"
-            >{t('nav.work')}</a
-          >
-          <a
-            href={localizePath(lang, 'agents')}
-            class="text-sm text-secondary hover:text-[var(--text-primary)]"
-            >{t('agentsPage.title')}</a
-          >
-          <a
-            href={localizePath(lang, 'contact')}
-            class="text-sm text-secondary hover:text-[var(--text-primary)]"
-            >{t('nav.contact')}</a
-          >
+        <nav class="flex flex-col gap-2.5" aria-label={t('footer.navLabel')}>
+          {
+            siteLinks.map((link) => (
+              <a
+                href={link.href}
+                class="text-sm text-secondary hover:text-[var(--text-primary)]"
+              >
+                {link.label}
+              </a>
+            ))
+          }
         </nav>
 
         <div class="flex flex-col gap-2.5">
@@ -82,6 +86,21 @@ const year = new Date().getFullYear();
             >LinkedIn</a
           >
         </div>
+
+        {
+          legalLinks.length > 0 && (
+            <nav class="flex flex-col gap-2.5" aria-label={t('footer.legalLabel')}>
+              {legalLinks.map((link) => (
+                <a
+                  href={link.href}
+                  class="text-sm text-secondary hover:text-[var(--text-primary)]"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+          )
+        }
       </div>
     </div>
 

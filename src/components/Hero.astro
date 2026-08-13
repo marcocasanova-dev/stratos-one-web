@@ -1,6 +1,5 @@
 ---
 import { PROOF } from '@/config';
-import { agents } from '@/data/agents';
 import { localizePath, useTranslations, type Lang } from '@i18n/utils';
 
 interface Props {
@@ -49,45 +48,18 @@ const t = useTranslations(lang);
 
     <div class="mt-9 flex flex-wrap items-center gap-3">
       <a href={localizePath(lang, 'contact')} class="btn-primary">
-        {t('hero.ctaCall')}
+        {t('hero.ctaPrimary')}
         <span aria-hidden="true">→</span>
       </a>
-      <a href="#agents" class="btn-secondary">{t('hero.ctaAgents')}</a>
+      <a href="#work" class="btn-secondary">{t('hero.ctaSecondary')}</a>
     </div>
 
     {/*
-      The roster as a chip strip. It is the fastest way to make "choose your
-      agent" concrete before the reader has scrolled to the grid.
+      Was a strip of six agent chips. A buyer arriving cold cannot choose an
+      agent before they know what is sold, so the space now goes to the stack
+      and the geography — the two facts that decide fit fastest.
     */}
-    <ul class="mt-12 flex flex-wrap gap-2" aria-label={t('agents.eyebrow')}>
-      {
-        agents.map((agent) => (
-          <li>
-            <a
-              href="#agents"
-              class="agent-glyph !h-auto !w-auto gap-2 !rounded-full px-3 py-1.5 text-xs font-semibold transition-transform hover:-translate-y-0.5"
-              style={`--agent-hue: ${agent.hue}; --agent: oklch(0.62 0.13 ${agent.hue})`}
-            >
-              <svg
-                class="h-3.5 w-3.5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d={agent.icon} />
-              </svg>
-              {agent.name}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-
-    <p class="mt-8 text-sm text-muted">{t('hero.note')}</p>
+    <p class="mt-10 font-mono text-sm text-muted">{t('hero.proofLine')}</p>
 
     <dl
       class="mt-10 grid gap-6 border-t border-subtle pt-9 sm:grid-cols-3 sm:gap-8"
@@ -109,14 +81,7 @@ const t = useTranslations(lang);
         ))
       }
     </dl>
+
+    <p class="mt-8 text-sm text-muted">{t('hero.note')}</p>
   </div>
 </section>
-
-<style>
-  /* The hero chips reuse .agent-glyph, which is a fixed-size grid cell. These
-     overrides turn it into an inline pill without forking the base component. */
-  .agent-glyph {
-    display: inline-flex;
-    align-items: center;
-  }
-</style>

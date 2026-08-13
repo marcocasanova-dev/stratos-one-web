@@ -1,6 +1,12 @@
 import { defaultLang, languages, ui, type Lang, type UIKey } from './ui';
 
-export { defaultLang, languages, localeCodes, type Lang } from './ui';
+export {
+  defaultLang,
+  languages,
+  localeCodes,
+  hreflangCodes,
+  type Lang,
+} from './ui';
 
 /**
  * Astro's configured `base`, normalised to either '' or '/segment' — no
@@ -40,10 +46,18 @@ export function useTranslations(lang: Lang) {
   };
 }
 
-/** Builds a base-aware, locale-prefixed path: `('de', 'agents')` -> `/base/de/agents`. */
+/**
+ * Builds a base-aware, locale-prefixed path: `('de', 'work')` -> `/base/de/work/`.
+ *
+ * The trailing slash is not cosmetic. The build emits directories, so the file
+ * that actually exists is `/de/work/index.html` and the sitemap lists
+ * `/de/work/`. Linking to `/de/work` made every internal navigation an extra
+ * redirect hop, and the canonical tag disagreed with the sitemap on every page.
+ * One convention, applied here, fixes both.
+ */
 export function localizePath(lang: Lang, path = ''): string {
   const clean = path.replace(/^\/+|\/+$/g, '');
-  return clean ? `${BASE}/${lang}/${clean}` : `${BASE}/${lang}`;
+  return clean ? `${BASE}/${lang}/${clean}/` : `${BASE}/${lang}/`;
 }
 
 /** Prefixes a non-localised asset or route with the deploy base. */
@@ -51,13 +65,26 @@ export function withBase(path: string): string {
   return `${BASE}/${path.replace(/^\/+/, '')}`;
 }
 
-/** Swaps the locale segment of the current path, preserving the rest of the route. */
+/**
+ * Swaps the locale segment of the current path, preserving the rest of the
+ * route. Trailing-slashed for the same reason as `localizePath` — these strings
+ * are also the `hreflang` alternates, and an alternate that redirects is an
+ * alternate a crawler has to resolve before it can trust it.
+ */
 export function switchLangPath(url: URL, target: Lang): string {
   const segments = stripBase(url.pathname).split('/').filter(Boolean);
-  if (segments.length > 0 && isLang(segments[0]!)) {
-    segments[0] = target;
-  } else {
-    segments.unshift(target);
+
+  /*
+   * A route with no locale segment has no translated counterpart to switch to
+   * — 404.html is the real case, served by GitHub Pages for every unmatched
+   * path. Prefixing it produced links to /en/404/, /es/404/ and /de/404/, none
+   * of which exist, so the language picker on the error page led to three more
+   * errors. Send those to the locale's home instead.
+   */
+  if (segments.length === 0 || !isLang(segments[0]!)) {
+    return localizePath(target);
   }
-  return `${BASE}/${segments.join('/')}`;
+
+  segments[0] = target;
+  return `${BASE}/${segments.join('/')}/`;
 }

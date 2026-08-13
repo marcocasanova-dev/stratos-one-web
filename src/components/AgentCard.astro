@@ -5,7 +5,7 @@ import { useTranslations, type Lang } from '@i18n/utils';
 interface Props {
   agent: Agent;
   lang: Lang;
-  /** Adds the shipped-evidence footer. Off on the landing grid, on for /agents. */
+  /** Adds the shipped-evidence footer. Off on the landing strip, on for /capabilities. */
   detailed?: boolean;
 }
 
@@ -33,7 +33,7 @@ const t = useTranslations(lang);
       <h3 class="text-lg leading-tight font-bold tracking-tight">
         {agent.name}
       </h3>
-      <p class="eyebrow mt-1.5 text-[11px]">{agent.role[lang]}</p>
+      <p class="eyebrow mt-1.5">{agent.role[lang]}</p>
     </div>
   </div>
 
@@ -42,7 +42,7 @@ const t = useTranslations(lang);
   </p>
 
   <div class="mt-5">
-    <p class="eyebrow text-[11px]">{t('agents.does')}</p>
+    <p class="eyebrow">{t('caps.does')}</p>
     <ul class="mt-3 space-y-2">
       {
         agent.does[lang].map((item) => (
@@ -61,7 +61,7 @@ const t = useTranslations(lang);
   {
     detailed && (
       <div class="mt-6 rounded-xl border border-subtle bg-sunken p-4">
-        <p class="eyebrow text-[11px]">{t('agents.proof')}</p>
+        <p class="eyebrow">{t('caps.proof')}</p>
         <p class="mt-2 text-sm leading-relaxed text-secondary">
           {agent.proof[lang]}
         </p>

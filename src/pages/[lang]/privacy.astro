@@ -1,0 +1,93 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import SectionHeading from '@components/SectionHeading.astro';
+import { SITE, LEGAL, isLegalComplete } from '@/config';
+import {
+  privacyIntro,
+  privacySections,
+  imprintLabels,
+  HOSTING_PROVIDER,
+  LEGAL_UPDATED,
+} from '@/data/legal';
+import { languages, localizePath, useTranslations, type Lang } from '@i18n/utils';
+
+/* Gated identically to /imprint — see the note there. */
+export function getStaticPaths() {
+  if (!isLegalComplete) return [];
+  return (Object.keys(languages) as Lang[]).map((lang) => ({
+    params: { lang },
+  }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+
+const controllerHeading = {
+  en: 'Controller',
+  es: 'Responsable del tratamiento',
+  de: 'Verantwortlicher',
+}[lang];
+---
+
+<BaseLayout
+  lang={lang}
+  title={t('seo.privacyTitle')}
+  description={t('seo.privacyDesc')}
+>
+  <section class="container-page py-16 md:py-24">
+    <div class="max-w-3xl">
+      <SectionHeading level={1} title={t('seo.privacyTitle')} sub={privacyIntro[lang]} />
+
+      <div class="mt-12 space-y-10">
+        <section class="border-t border-subtle pt-8">
+          <h2 class="text-xl font-bold tracking-tight">{controllerHeading}</h2>
+          <div class="mt-4 space-y-1 text-secondary">
+            <p>{LEGAL.legalName}</p>
+            <p>{LEGAL.street}</p>
+            <p>{`${LEGAL.postalCode} ${LEGAL.city}`.trim()}</p>
+            <p>{LEGAL.country}</p>
+            <p class="pt-2">
+              <a href={`mailto:${SITE.email}`} class="link-accent">{SITE.email}</a>
+            </p>
+          </div>
+          <p class="mt-4 text-sm text-muted">
+            <a href={localizePath(lang, 'imprint')} class="link-accent">
+              {imprintLabels.provider[lang]} → {t('legal.imprintNav')}
+            </a>
+          </p>
+        </section>
+
+        {
+          privacySections.map((section) => (
+            <section class="border-t border-subtle pt-8">
+              <h2 class="text-xl font-bold tracking-tight">
+                {section.heading[lang]}
+              </h2>
+              <div class="mt-4 space-y-4">
+                {section.body[lang].map((paragraph) => (
+                  <p class="leading-relaxed text-secondary">{paragraph}</p>
+                ))}
+              </div>
+              {section.id === 'hosting' && (
+                <p class="mt-4 text-sm">
+                  <a
+                    href={HOSTING_PROVIDER.privacyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="link-accent"
+                  >
+                    GitHub Privacy Statement ↗
+                  </a>
+                </p>
+              )}
+            </section>
+          ))
+        }
+      </div>
+
+      <p class="mt-12 text-sm text-muted">
+        {t('legal.lastUpdated')}: <time datetime={LEGAL_UPDATED}>{LEGAL_UPDATED}</time>
+      </p>
+    </div>
+  </section>
+</BaseLayout>

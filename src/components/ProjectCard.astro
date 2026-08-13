@@ -15,6 +15,11 @@ const t = useTranslations(lang);
  * The long-form case study lives on the portfolio site, not here. That is the
  * de-duplication rule made structural: this card carries the summary and the
  * outcome, and anything deeper is one link away rather than a second copy.
+ *
+ * The link is rendered only when `caseStudy` says the destination exists. Three
+ * of these cards used to promise "read the case study" and deliver a 404 on
+ * marcocasanova.de, on the highest-intent click on the page — the moment a
+ * prospect decides to check the evidence is the worst possible moment to break.
  */
 const href = `${SITE.portfolio}/${lang}/work/${project.slug}`;
 
@@ -35,7 +40,7 @@ const eyebrow = [client, project.year].filter(Boolean).join(' · ');
     squeeze the title into an extra line on one card and not its neighbours.
   */}
   <div class="flex items-start justify-between gap-3">
-    <p class="eyebrow min-w-0 text-[11px]">{eyebrow}</p>
+    <p class="eyebrow min-w-0">{eyebrow}</p>
     <span class="tag flex-none">{project.status[lang]}</span>
   </div>
 
@@ -48,7 +53,7 @@ const eyebrow = [client, project.year].filter(Boolean).join(' · ');
   </p>
 
   <div class="mt-5 rounded-xl border border-subtle bg-sunken p-4">
-    <p class="eyebrow text-[11px]">{t('work.outcome')}</p>
+    <p class="eyebrow">{t('work.outcome')}</p>
     <p class="mt-2 text-sm leading-relaxed text-secondary">
       {project.outcome[lang]}
     </p>
@@ -60,22 +65,26 @@ const eyebrow = [client, project.year].filter(Boolean).join(' · ');
     summary above it runs.
   */}
   <div class="mt-auto pt-6">
-    <p class="eyebrow text-[11px]">{t('work.role')}</p>
+    <p class="eyebrow">{t('work.role')}</p>
     <p class="mt-1.5 text-sm text-secondary">{project.role[lang]}</p>
 
     <ul class="mt-4 flex flex-wrap gap-1.5" aria-label={t('work.stack')}>
       {project.stack.map((item) => <li class="tag">{item}</li>)}
     </ul>
 
-    <p class="mt-5 border-t border-subtle pt-4">
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="link-accent text-sm"
-      >
-        {t('work.caseStudy')} ↗
-      </a>
-    </p>
+    {
+      project.caseStudy && (
+        <p class="mt-5 border-t border-subtle pt-4">
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link-accent text-sm"
+          >
+            {t('work.caseStudy')} ↗
+          </a>
+        </p>
+      )
+    }
   </div>
 </article>

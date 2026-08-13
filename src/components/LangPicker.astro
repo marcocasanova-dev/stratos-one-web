@@ -27,12 +27,7 @@ const codes = Object.keys(languages) as Lang[];
           href={switchLangPath(Astro.url, code)}
           hreflang={code}
           aria-current={isActive ? 'true' : undefined}
-          class:list={[
-            'rounded-md px-2 py-1 font-mono text-[0.7rem] uppercase transition-colors',
-            isActive
-              ? 'bg-[var(--btn-accent)] font-bold text-[var(--btn-accent-ink)]'
-              : 'text-muted hover:text-[var(--text-primary)]',
-          ]}
+          class="lang-link"
         >
           {code}
         </a>

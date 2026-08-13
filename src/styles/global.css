@@ -20,6 +20,13 @@
   --color-ink-300: oklch(0.85 0.011 254);
   --color-ink-400: oklch(0.68 0.015 256);
   --color-ink-500: oklch(0.55 0.018 258);
+  /*
+   * Added for light-mode muted text. ink-500 measures 4.65:1 on --surface but
+   * only 4.38:1 on --surface-sunken, and muted text sits on sunken in every
+   * outcome box and eyebrow — so the ramp's own step failed AA exactly where
+   * the token is used most. This step clears 5.4:1 on all three light surfaces.
+   */
+  --color-ink-550: oklch(0.5 0.018 258);
   --color-ink-600: oklch(0.44 0.02 260);
   --color-ink-700: oklch(0.34 0.022 262);
   --color-ink-800: oklch(0.245 0.024 264);
@@ -60,7 +67,7 @@
     --border-strong: var(--color-ink-300);
     --text-primary: var(--color-ink-900);
     --text-secondary: var(--color-ink-600);
-    --text-muted: var(--color-ink-500);
+    --text-muted: var(--color-ink-550);
     --accent: var(--color-accent-700);
     /* Fill for the primary CTA — deep enough to hold near-black text on white. */
     --btn-accent: var(--color-accent-500);
@@ -174,7 +181,14 @@
     padding-inline: 1.25rem;
   }
 
-  /* Small uppercase mono label used for section eyebrows and metadata keys. */
+  /*
+   * Small uppercase mono label used for section eyebrows and metadata keys.
+   *
+   * 0.75rem is the floor, and templates no longer override it down to 11px.
+   * At 11px, uppercase mono with 0.14em tracking is decoration that happens to
+   * contain the field name — and the field name ("Outcome", "Role") is the part
+   * that makes the value underneath it mean anything.
+   */
   .eyebrow {
     font-family: var(--font-mono);
     font-size: 0.75rem;
@@ -365,6 +379,102 @@
     color: var(--btn-accent-ink);
   }
 
+  /*
+   * Square icon-only control (theme toggle, menu button).
+   *
+   * 44px on touch, 36px from the md breakpoint up. The header used a flat 36px,
+   * which is a comfortable mouse target and a poor thumb one; the two contexts
+   * do not have to share a number just because they share a component.
+   */
+  .icon-control {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex: none;
+    border-radius: 0.625rem;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    transition:
+      border-color 180ms var(--ease-out-soft),
+      color 180ms var(--ease-out-soft);
+  }
+
+  .icon-control:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+  }
+
+  @media (min-width: 768px) {
+    .icon-control {
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+  }
+
+  /* Segment of the language control. Full-height tap area, same visual size. */
+  .lang-link {
+    display: grid;
+    place-items: center;
+    min-width: 2.25rem;
+    min-height: 2.5rem;
+    padding-inline: 0.5rem;
+    border-radius: 0.375rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color 180ms var(--ease-out-soft);
+  }
+
+  .lang-link:hover {
+    color: var(--text-primary);
+  }
+
+  .lang-link[aria-current='true'] {
+    background-color: var(--btn-accent);
+    color: var(--btn-accent-ink);
+    font-weight: 700;
+  }
+
+  /*
+   * FAQ disclosure. <details>/<summary> rather than a scripted accordion: the
+   * answers stay in the document and stay findable by in-page search and by a
+   * crawler even with the panel closed, and the control works with no JS at all.
+   */
+  .faq-item {
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .faq-item > summary {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1.25rem;
+    cursor: pointer;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    list-style: none;
+  }
+
+  .faq-item > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-item > summary::after {
+    content: '+';
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  .faq-item[open] > summary::after {
+    content: '–';
+  }
+
   /* Numbered step marker for the phase sequence. */
   .phase-step {
     display: grid;
@@ -380,8 +490,19 @@
     background-color: var(--btn-accent);
   }
 
-  /* Fades sections in on scroll; `.is-visible` is applied by the IO in BaseLayout. */
-  .reveal {
+  /*
+   * Fades sections in on scroll; `.is-visible` is applied by the IntersectionObserver
+   * in BaseLayout.
+   *
+   * ── Why this is gated on `html.js` ─────────────────────────────────────────
+   * The hidden state used to be unconditional, so `opacity: 0` applied whether
+   * or not the script that removes it ever ran. One blocked bundle, one script
+   * error, one visitor with JavaScript disabled, and nearly every section of
+   * every page rendered invisible — while still being present for a crawler,
+   * which is the worst of both outcomes. Now the page is legible by default and
+   * the animation is the enhancement, which is the correct way round.
+   */
+  .js .reveal {
     opacity: 0;
     transform: translateY(16px);
     transition:
@@ -389,13 +510,13 @@
       transform 650ms var(--ease-out-soft);
   }
 
-  .reveal.is-visible {
+  .js .reveal.is-visible {
     opacity: 1;
     transform: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .reveal {
+    .js .reveal {
       opacity: 1;
       transform: none;
     }

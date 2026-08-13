@@ -62,6 +62,24 @@ export interface Project {
   outcome: Record<Lang, string>;
   /** Max six — beyond that the chips stop being scannable and become texture. */
   stack: string[];
+  /**
+   * A long-form case study actually exists at marcocasanova.de/<lang>/work/<slug>.
+   *
+   * Required, not optional, and never defaulted to `true`: three cards used to
+   * render "read the case study" straight onto a 404 because the flag did not
+   * exist and nobody re-checked. `false` suppresses the link entirely — a
+   * missing link costs a click, a broken one costs the sale.
+   * Verified against the live portfolio on 13 Aug 2026.
+   */
+  caseStudy: boolean;
+  /**
+   * Reached real users in production. Gates the "systems in production" proof
+   * counter, so a scaffold in active development or a personal project cannot
+   * quietly inflate a number a prospect might check.
+   */
+  inProduction: boolean;
+  /** Shown on the landing page. Everything else lives on /work. */
+  featured?: boolean;
 }
 
 export const projects: Project[] = [
@@ -93,6 +111,8 @@ export const projects: Project[] = [
       de: 'Das zweite Produkt ging live, ohne das Fundament des ersten neu zu schreiben.',
     },
     stack: ['Turborepo', 'pnpm', 'Expo', 'Next.js', 'TypeScript', 'Supabase'],
+    caseStudy: false,
+    inProduction: false,
   },
   {
     slug: 'mobile-commerce-platform',
@@ -118,6 +138,9 @@ export const projects: Project[] = [
       de: 'Marktregeln blieben in gemeinsamen APIs, statt pro Land in der App dupliziert zu werden — Releases wurden dadurch nachvollziehbarer.',
     },
     stack: ['React Native', 'Expo', 'TypeScript', 'Node.js', 'TanStack Query', 'CI/CD'],
+    caseStudy: true,
+    inProduction: true,
+    featured: true,
   },
   {
     slug: 'nightowl',
@@ -144,6 +167,8 @@ export const projects: Project[] = [
       de: 'Preisphasen, Rabatte und Scanner-Validierung folgten einem Regelwerk statt drei Kopien in den Clients.',
     },
     stack: ['Ruby on Rails', 'React', 'Flutter', 'PostgreSQL'],
+    caseStudy: true,
+    inProduction: true,
   },
   {
     slug: 'kin-relay',
@@ -172,6 +197,8 @@ export const projects: Project[] = [
       de: 'Eine Übergabe zwischen Angehörigen und ambulantem Dienst verliert keine Information mehr — jedes Ereignis trägt Kategorie, Schweregrad und Verfasser.',
     },
     stack: ['Next.js', 'Expo', 'TypeScript', 'Supabase', 'PostgreSQL', 'Zod'],
+    caseStudy: false,
+    inProduction: true,
   },
   {
     slug: 'raumhub',
@@ -198,6 +225,8 @@ export const projects: Project[] = [
       de: 'Der Mobile-Client hält kein Zahlungs-Secret, und der Android-Berechtigungssatz wurde auf das reduziert, was sich einer Prüfstelle begründen lässt.',
     },
     stack: ['Expo', 'React Native', 'Supabase', 'Deno', 'Stripe', 'PostgreSQL'],
+    caseStudy: false,
+    inProduction: true,
   },
   {
     slug: 'iot-data-platform',
@@ -224,6 +253,9 @@ export const projects: Project[] = [
       de: 'Bediener handelten am Dashboard statt zur Maschine zu laufen und sahen, wann ein Messwert veraltet war, statt ihm stillschweigend zu vertrauen.',
     },
     stack: ['Svelte', 'Node.js', 'WebSockets', 'TimescaleDB', 'D3.js', 'Python'],
+    caseStudy: true,
+    inProduction: true,
+    featured: true,
   },
   {
     slug: 'clinical-data-analyzer',
@@ -249,6 +281,9 @@ export const projects: Project[] = [
       de: 'Jede Analyse speicherte Datensatz-, Parameter- und Pipeline-Version — sodass ein Ergebnis später erneut erzeugt und verteidigt werden konnte.',
     },
     stack: ['Python', 'FastAPI', 'React', 'PostgreSQL', 'Celery', 'Docker'],
+    caseStudy: true,
+    inProduction: true,
+    featured: true,
   },
   {
     slug: 'viamor-dating',
@@ -275,6 +310,8 @@ export const projects: Project[] = [
       de: 'Verpartnerte Nutzende, Gruppen-Consent und Matching-Regeln passten in eine Struktur statt in einen Stapel Sonderfälle.',
     },
     stack: ['Flutter', 'Ruby on Rails', 'Vue.js', 'Firebase', 'PostgreSQL'],
+    caseStudy: true,
+    inProduction: true,
   },
   {
     slug: 'bavarian-defence',
@@ -304,11 +341,24 @@ export const projects: Project[] = [
       de: 'Die Simulation in späten Wellen blieb flüssig, sobald Entity-Pooling und ein Spatial Hash den GC-Churn aus den heißesten Schleifen nahmen.',
     },
     stack: ['Unity', 'C#'],
+    caseStudy: true,
+    inProduction: false,
   },
 ];
 
 /** Portfolio order: the sequence a prospect should read them in. */
 export const orderedProjects = [...projects].sort((a, b) => a.order - b.order);
+
+/**
+ * The three cards the landing page leads with — B2B client work in the sectors
+ * Stratos One sells into. Own products and the personal project are not hidden;
+ * they live on /work, where a prospect who wants the full list can read them
+ * without the three strongest cases being diluted nine ways on first contact.
+ */
+export const featuredProjects = orderedProjects.filter((p) => p.featured);
+
+/** Only what reached real users. The proof counter reads this, not `projects`. */
+export const productionProjects = projects.filter((p) => p.inProduction);
 
 /** Only the sectors actually used, in `SECTORS` order — no empty filter chips. */
 export const usedSectors: Sector[] = SECTORS.filter((sector) =>

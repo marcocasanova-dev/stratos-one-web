@@ -1,0 +1,152 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import SectionHeading from '@components/SectionHeading.astro';
+import ProjectCard from '@components/ProjectCard.astro';
+import { orderedProjects, sectorLabels, usedSectors } from '@/data/projects';
+import { SITE } from '@/config';
+import { languages, localizePath, useTranslations, type Lang } from '@i18n/utils';
+
+export function getStaticPaths() {
+  return (Object.keys(languages) as Lang[]).map((lang) => ({
+    params: { lang },
+  }));
+}
+
+const lang = Astro.params.lang as Lang;
+const t = useTranslations(lang);
+
+// Rendered as filter chips. `all` is first and selected on load; the rest are
+// only the sectors some project actually claims, so no chip can filter to zero.
+const filters = [
+  { key: 'all', label: t('work.filterAll') },
+  ...usedSectors.map((sector) => ({
+    key: sector,
+    label: sectorLabels[sector][lang],
+  })),
+];
+---
+
+<BaseLayout lang={lang} title={t('seo.workTitle')} description={t('seo.workDesc')}>
+  <section class="relative overflow-hidden border-b border-subtle">
+    <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+      <div class="backdrop-grid absolute inset-0 opacity-50"></div>
+      <div
+        class="accent-glow absolute -top-32 left-1/2 h-64 w-[38rem] -translate-x-1/2 rounded-full"
+      >
+      </div>
+    </div>
+
+    <div class="container-page py-16 md:py-20">
+      <a href={localizePath(lang)} class="link-accent text-sm">
+        ← {t('workPage.back')}
+      </a>
+      <div class="mt-6">
+        <SectionHeading
+          level={1}
+          eyebrow={t('workPage.eyebrow')}
+          title={t('workPage.title')}
+          sub={t('workPage.sub')}
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="container-page py-16 md:py-20">
+    <div
+      class="flex flex-wrap gap-2"
+      role="group"
+      aria-label={t('work.filterLabel')}
+      id="work-filters"
+    >
+      {
+        filters.map((filter) => (
+          <button
+            type="button"
+            class="filter-chip"
+            data-filter={filter.key}
+            aria-pressed={filter.key === 'all' ? 'true' : 'false'}
+          >
+            {filter.label}
+          </button>
+        ))
+      }
+    </div>
+
+    <ul id="work-grid" class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {
+        orderedProjects.map((project) => (
+          <li data-sectors={project.sectors.join(' ')}>
+            <ProjectCard project={project} lang={lang} />
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="mt-4 text-sm text-muted" id="work-count" aria-live="polite">
+      {
+        `${orderedProjects.length} ${
+          orderedProjects.length === 1 ? t('work.countOne') : t('work.countMany')
+        }`
+      }
+    </p>
+
+    <div class="mt-8">
+      <a
+        href={`${SITE.portfolio}/${lang}/work`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="link-accent text-sm"
+      >
+        {t('work.viewAll')} ↗
+      </a>
+    </div>
+
+    {/*
+      Progressive enhancement: with no JS every project is visible and the chips
+      simply do nothing. That is the right failure mode for a filter — nothing
+      is hidden behind a control that never ran.
+    */}
+    <script
+      is:inline
+      define:vars={{
+        one: t('work.countOne'),
+        many: t('work.countMany'),
+      }}
+    >
+      (function () {
+        var chips = document.querySelectorAll('#work-filters [data-filter]');
+        var items = document.querySelectorAll('#work-grid > li');
+        var count = document.getElementById('work-count');
+        if (!chips.length || !items.length) return;
+
+        function apply(active) {
+          var shown = 0;
+
+          items.forEach(function (item) {
+            var sectors = (item.getAttribute('data-sectors') || '').split(' ');
+            var visible = active === 'all' || sectors.indexOf(active) !== -1;
+            item.hidden = !visible;
+            if (visible) shown++;
+          });
+
+          chips.forEach(function (chip) {
+            chip.setAttribute(
+              'aria-pressed',
+              String(chip.getAttribute('data-filter') === active)
+            );
+          });
+
+          if (count) {
+            count.textContent = shown + ' ' + (shown === 1 ? one : many);
+          }
+        }
+
+        chips.forEach(function (chip) {
+          chip.addEventListener('click', function () {
+            apply(chip.getAttribute('data-filter') || 'all');
+          });
+        });
+      })();
+    </script>
+  </section>
+</BaseLayout>

@@ -39,11 +39,30 @@ export default defineConfig({
     },
   },
 
+  /*
+   * /<lang>/agents was renamed to /<lang>/capabilities — "the roster" sold a
+   * team of six that does not exist, and the URL carried the same claim. The
+   * old paths keep resolving so any link already shared does not 404. Static
+   * output means these are meta-refresh stubs rather than 301s; they are
+   * excluded from the sitemap below so only the new URL is submitted.
+   */
+  redirects: {
+    '/en/agents': '/en/capabilities/',
+    '/es/agents': '/es/capabilities/',
+    '/de/agents': '/de/capabilities/',
+  },
+
   integrations: [
     sitemap({
       i18n: {
         defaultLocale: 'en',
-        locales: { en: 'en-US', es: 'es-ES', de: 'de-DE' },
+        /*
+         * Language-only, matching the <link rel="alternate"> tags the pages
+         * emit. These were en-US/es-ES/de-DE, which tells a crawler there is a
+         * US English page and a Spain Spanish page; there is one English page
+         * and one Spanish page, and no regional content anywhere on the site.
+         */
+        locales: { en: 'en', es: 'es', de: 'de' },
       },
       /*
        * Drop 404 and the bare root. The root is the locale gateway: it is
@@ -58,6 +77,10 @@ export default defineConfig({
        */
       filter: (page) =>
         !page.includes('/404') &&
+        // Redirect stubs for the old /agents URLs — the destination is in the
+        // sitemap, and submitting both would offer a crawler two URLs for one
+        // page and let it pick the deprecated one.
+        !page.includes('/agents') &&
         page.replace(/\/+$/, '') !==
           `${SITE_ORIGIN}${BASE}`.replace(/\/+$/, ''),
     }),
