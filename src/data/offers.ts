@@ -5,7 +5,7 @@ import type { Lang } from '@i18n/utils';
  *
  * ── Why this file exists ────────────────────────────────────────────────────
  * The page used to sell "pick an agent", which is a mechanism, not a purchase.
- * A buyer with a blocked release cannot tell what they receive, when, or what
+ * A buyer with a blocked launch cannot tell what they receive, when, or what
  * it costs to find out they were wrong about us. These three shapes answer that
  * in order of commitment, and the first one is deliberately small enough to say
  * yes to without a procurement conversation.
@@ -14,6 +14,12 @@ import type { Lang } from '@i18n/utils';
  * render a price when one is present, so publishing rates later is a data edit
  * rather than a template change. Do not fill it in with a guess — a number on
  * this page is a quote.
+ *
+ * ── Reading level ────────────────────────────────────────────────────────────
+ * Written for a founder or business owner deciding whether to reach out, not
+ * for an engineer scoping a contract. Names and deliverables describe the
+ * result in the reader's own words ("a written plan you can act on") rather
+ * than the engineering artefact behind it ("architecture decision records").
  */
 
 export interface Offer {
@@ -34,44 +40,44 @@ export const offers: Offer[] = [
     id: 'diagnostic',
     hue: 193,
     title: {
-      en: 'Technical Delivery Diagnostic',
-      es: 'Diagnóstico Técnico de Entrega',
-      de: 'Technisches Delivery-Diagnostic',
+      en: 'Quick Check-Up',
+      es: 'Revisión Rápida',
+      de: 'Kurzer Check',
     },
     duration: {
-      en: '5–10 business days',
+      en: '5–10 working days',
       es: '5–10 días laborables',
       de: '5–10 Arbeitstage',
     },
     body: {
-      en: 'One system, one critical question, one prioritised plan. You receive a system map, evidence-backed risks, quick wins and a sequenced delivery plan you own.',
-      es: 'Un sistema, una pregunta crítica, un plan priorizado. Recibes un mapa del sistema, los riesgos con la evidencia que los respalda, mejoras inmediatas y un plan de entrega secuenciado que es tuyo.',
-      de: 'Ein System, eine kritische Frage, ein priorisierter Plan. Du erhältst eine Systemkarte, belegte Risiken, schnelle Verbesserungen und einen sequenzierten Lieferplan, der dir gehört.',
+      en: 'You have one big question about your software. We look under the hood, find out what is really going on, and hand you a clear, written plan you can act on — with or without us.',
+      es: 'Tienes una gran pregunta sobre tu software. Miramos por dentro, averiguamos qué está pasando realmente, y te entregamos un plan claro y por escrito que puedes poner en marcha — con nosotros o sin nosotros.',
+      de: 'Du hast eine große Frage zu deiner Software. Wir schauen genau hin, finden heraus, was wirklich los ist, und geben dir einen klaren, schriftlichen Plan an die Hand, den du umsetzen kannst — mit uns oder ohne uns.',
     },
     deliverables: {
       en: [
-        'Kickoff, and one primary technical question agreed in writing',
-        'Review of the agreed repositories, documents, logs and architecture',
-        'A current-state system map',
-        'Prioritised risks and quick wins',
-        'A 30/60/90-day delivery plan',
-        'Readout session and written handover',
+        'A first call to agree on the one question that matters most to you',
+        'We look through your app, website or systems to understand what is really happening',
+        'A simple map of how everything fits together today',
+        'A plain list of what is risky, and quick fixes we spot along the way',
+        'A step-by-step plan for the next 30, 60 and 90 days',
+        'A wrap-up call to walk through everything, plus the full plan in writing',
       ],
       es: [
-        'Kickoff y una pregunta técnica principal acordada por escrito',
-        'Revisión de los repositorios, documentos, logs y arquitectura acordados',
-        'Un mapa del sistema en su estado actual',
-        'Riesgos priorizados y mejoras inmediatas',
-        'Un plan de entrega a 30/60/90 días',
-        'Sesión de presentación y entrega por escrito',
+        'Una primera llamada para acordar la pregunta que más te importa',
+        'Revisamos tu app, tu web o tus sistemas para entender qué está pasando realmente',
+        'Un mapa sencillo de cómo encaja todo hoy en día',
+        'Una lista clara de qué es arriesgado, y mejoras rápidas que encontremos por el camino',
+        'Un plan paso a paso para los próximos 30, 60 y 90 días',
+        'Una llamada final para repasarlo todo, más el plan completo por escrito',
       ],
       de: [
-        'Kickoff und eine schriftlich vereinbarte technische Hauptfrage',
-        'Review der vereinbarten Repositories, Dokumente, Logs und Architektur',
-        'Eine Systemkarte des Ist-Zustands',
-        'Priorisierte Risiken und schnelle Verbesserungen',
-        'Ein 30/60/90-Tage-Lieferplan',
-        'Abschlusssitzung und schriftliche Übergabe',
+        'Ein erstes Gespräch, um die eine Frage zu klären, die dir am wichtigsten ist',
+        'Wir schauen uns deine App, Website oder Systeme an, um zu verstehen, was wirklich passiert',
+        'Eine einfache Übersicht, wie heute alles zusammenhängt',
+        'Eine klare Liste, was riskant ist, plus schnelle Verbesserungen, die uns auffallen',
+        'Ein Schritt-für-Schritt-Plan für die nächsten 30, 60 und 90 Tage',
+        'Ein Abschlussgespräch, in dem wir alles durchgehen, plus den ganzen Plan schriftlich',
       ],
     },
     price: null,
@@ -80,15 +86,15 @@ export const offers: Offer[] = [
     id: 'sprint',
     hue: 28,
     title: {
-      en: 'Production Build Sprint',
-      es: 'Sprint de Desarrollo a Producción',
-      de: 'Production Build Sprint',
+      en: 'Build & Launch',
+      es: 'Construcción y Lanzamiento',
+      de: 'Bauen & Launchen',
     },
     duration: { en: '4–8 weeks', es: '4–8 semanas', de: '4–8 Wochen' },
     body: {
-      en: 'One clearly defined outcome delivered to production — an API or data flow, a mobile feature, a migration, or a reliability improvement.',
-      es: 'Un resultado claramente definido entregado en producción: una API o un flujo de datos, una función móvil, una migración o una mejora de fiabilidad.',
-      de: 'Ein klar definiertes Ergebnis in Produktion geliefert — eine API oder ein Datenfluss, ein Mobile-Feature, eine Migration oder eine Verbesserung der Zuverlässigkeit.',
+      en: 'One clear result, live for your customers — a new feature in your app, two systems finally talking to each other correctly, moving to more reliable software, or fixing something that keeps breaking.',
+      es: 'Un resultado claro, en marcha para tus clientes — una función nueva en tu app, dos sistemas que por fin se comunican bien entre sí, un cambio a software más fiable, o arreglar algo que no deja de romperse.',
+      de: 'Ein klares Ergebnis, live für deine Kunden — eine neue Funktion in deiner App, zwei Systeme, die endlich richtig miteinander sprechen, ein Umstieg auf zuverlässigere Software, oder die Reparatur von etwas, das ständig kaputtgeht.',
     },
     price: null,
   },
@@ -96,19 +102,19 @@ export const offers: Offer[] = [
     id: 'embedded',
     hue: 268,
     title: {
-      en: 'Embedded Senior Engineering',
-      es: 'Ingeniería Senior Integrada',
-      de: 'Embedded Senior Engineering',
+      en: 'Ongoing Senior Help',
+      es: 'Ayuda Senior Continua',
+      de: 'Laufende Senior-Unterstützung',
     },
     duration: {
-      en: 'Defined period',
-      es: 'Periodo definido',
-      de: 'Definierter Zeitraum',
+      en: 'As long as you need',
+      es: 'El tiempo que necesites',
+      de: 'So lange, wie du es brauchst',
     },
     body: {
-      en: 'Senior hands-on capacity inside your product team, with direct ownership of design, implementation, testing and release.',
-      es: 'Capacidad senior trabajando dentro de tu equipo de producto, con responsabilidad directa sobre diseño, implementación, pruebas y release.',
-      de: 'Senior-Kapazität, die direkt in deinem Produktteam mitarbeitet — mit Verantwortung für Design, Implementierung, Tests und Release.',
+      en: 'Experienced, hands-on help inside your own team for as long as you need it — someone who takes real responsibility for planning, building, testing and getting things live, not just writing code on the side.',
+      es: 'Ayuda experta y práctica dentro de tu propio equipo durante el tiempo que necesites — alguien que asume responsabilidad real sobre la planificación, la construcción, las pruebas y la puesta en marcha, no solo escribir código en paralelo.',
+      de: 'Erfahrene, praktische Unterstützung direkt in deinem Team, so lange du sie brauchst — jemand, der wirklich Verantwortung für Planung, Umsetzung, Tests und den Live-Gang übernimmt, statt nur nebenbei Code zu schreiben.',
     },
     price: null,
   },

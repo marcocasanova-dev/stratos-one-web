@@ -114,27 +114,27 @@ export const PROOF = [
      */
     value: String(productionProjects.length),
     label: {
-      en: 'Systems in production',
-      es: 'Sistemas en producción',
-      de: 'Systeme in Produktion',
+      en: 'Projects live and in use',
+      es: 'Proyectos en marcha y en uso',
+      de: 'Live-Projekte im Einsatz',
     },
     detail: {
-      en: 'Healthcare, industrial IoT, ticketing, retail, marketplaces — each one reached real users.',
-      es: 'Salud, IoT industrial, ticketing, retail, marketplaces — cada uno llegó a usuarios reales.',
-      de: 'Healthcare, Industrie-IoT, Ticketing, Retail, Marktplätze — jedes davon hat echte Nutzer erreicht.',
+      en: 'Healthcare, factories and logistics, event tickets, shops, online marketplaces — real people use every one of them.',
+      es: 'Salud, fábricas y logística, entradas para eventos, tiendas, marketplaces online — cada uno lo usa gente real.',
+      de: 'Gesundheitswesen, Industrie und Logistik, Event-Tickets, Shops, Online-Marktplätze — jedes davon nutzen echte Menschen.',
     },
   },
   {
     value: '11',
     label: {
-      en: 'Interface languages',
-      es: 'Idiomas de interfaz',
-      de: 'Oberflächensprachen',
+      en: 'Languages supported',
+      es: 'Idiomas compatibles',
+      de: 'Unterstützte Sprachen',
     },
     detail: {
-      en: 'One care product ships in eleven locales, including Arabic, Turkish, and Ukrainian.',
-      es: 'Un producto de cuidados se publica en once idiomas, incluidos árabe, turco y ucraniano.',
-      de: 'Ein Pflegeprodukt läuft in elf Sprachen, darunter Arabisch, Türkisch und Ukrainisch.',
+      en: 'One of our apps works in eleven languages, including Arabic, Turkish and Ukrainian.',
+      es: 'Una de nuestras apps funciona en once idiomas, incluidos árabe, turco y ucraniano.',
+      de: 'Eine unserer Apps funktioniert in elf Sprachen, darunter Arabisch, Türkisch und Ukrainisch.',
     },
   },
   {
@@ -144,14 +144,14 @@ export const PROOF = [
      */
     value: '4',
     label: {
-      en: 'Reused foundations',
-      es: 'Cimientos reutilizados',
-      de: 'Wiederverwendete Fundamente',
+      en: 'Building blocks we reuse',
+      es: 'Piezas reutilizables',
+      de: 'Wiederverwendete Bausteine',
     },
     detail: {
-      en: 'Auth, config, UI, and utilities written once — the second product shipped without rebuilding the first one’s base.',
-      es: 'Auth, configuración, UI y utilidades escritos una vez — el segundo producto salió sin reconstruir la base del primero.',
-      de: 'Auth, Config, UI und Utilities einmal geschrieben — das zweite Produkt ging live, ohne die Basis des ersten neu zu bauen.',
+      en: 'Login, settings, design and everyday tools, built once — so the second product launched without rebuilding what the first one already had.',
+      es: 'Login, ajustes, diseño y herramientas del día a día, construidos una vez — así el segundo producto se lanzó sin reconstruir lo que ya tenía el primero.',
+      de: 'Login, Einstellungen, Design und Alltagswerkzeuge, einmal gebaut — so ging das zweite Produkt live, ohne das neu zu bauen, was das erste schon hatte.',
     },
   },
 ] as const;

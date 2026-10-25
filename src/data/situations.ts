@@ -8,8 +8,11 @@ import type { Lang } from '@i18n/utils';
  * know which of these four sentences is currently true for them — and that
  * recognition, not the mechanism, is what makes them scroll.
  *
- * Each card is a situation, never a technology list. If a card cannot be read
- * aloud by a non-engineer CTO as "yes, that is us", it does not belong here.
+ * ── Reading level ────────────────────────────────────────────────────────────
+ * Written for a founder or operations lead, not an engineer. If a card cannot
+ * be read aloud by a non-technical business owner as "yes, that is exactly
+ * where we are", it does not belong here — no matter how accurate it is
+ * technically.
  */
 
 export interface Situation {
@@ -22,53 +25,53 @@ export const situations: Situation[] = [
   {
     id: 'blocked-release',
     label: {
-      en: 'A release is blocked',
-      es: 'Una release bloqueada',
-      de: 'Ein Release steht',
+      en: 'Launch keeps slipping',
+      es: 'El lanzamiento se retrasa una y otra vez',
+      de: 'Der Launch verschiebt sich immer wieder',
     },
     body: {
-      en: 'The date is set, but architecture, data or an integration is in the way, and nobody in the room can say with confidence which one.',
-      es: 'La fecha está fijada, pero la arquitectura, los datos o una integración lo impiden, y nadie en la sala puede decir con seguridad cuál de los tres.',
-      de: 'Der Termin steht, aber Architektur, Daten oder eine Integration blockieren — und niemand im Raum kann sicher sagen, welches davon.',
+      en: 'You have a date, but every time it gets close something technical is not ready — and nobody can tell you exactly what, or why.',
+      es: 'Tienes una fecha, pero cada vez que se acerca algo técnico no está listo — y nadie te sabe decir exactamente qué, ni por qué.',
+      de: 'Du hast einen Termin, aber jedes Mal, wenn er näher rückt, ist irgendetwas Technisches nicht fertig — und niemand kann dir genau sagen, was oder warum.',
     },
   },
   {
     id: 'senior-ownership',
     label: {
-      en: 'No senior owner',
-      es: 'Falta responsable senior',
-      de: 'Keine Senior-Verantwortung',
+      en: 'No one is really in charge of it',
+      es: 'Nadie está realmente al mando de esto',
+      de: 'Niemand ist wirklich dafür verantwortlich',
     },
     body: {
-      en: 'You need someone who owns backend and frontend together and makes the call, without adding another permanent headcount to do it.',
-      es: 'Necesitas a alguien que se responsabilice de backend y frontend a la vez y tome la decisión, sin sumar otra contratación permanente para conseguirlo.',
-      de: 'Ihr braucht jemanden, der Backend und Frontend gemeinsam verantwortet und entscheidet — ohne dafür eine weitere feste Stelle zu schaffen.',
+      en: 'You need one experienced person who can look at the whole thing — website, app and all — and make the call, without hiring a full-time employee to do it.',
+      es: 'Necesitas a una sola persona con experiencia que pueda ver todo el conjunto — web, app y demás — y tomar la decisión, sin tener que contratar a alguien a tiempo completo para ello.',
+      de: 'Du brauchst eine erfahrene Person, die sich das große Ganze ansieht — Website, App und alles dazwischen — und entscheidet, ohne dass du dafür jemanden fest einstellen musst.',
     },
   },
   {
     id: 'state-disagreement',
     label: {
-      en: 'The data disagrees',
-      es: 'Los datos no cuadran',
-      de: 'Die Daten widersprechen sich',
+      en: 'Your numbers do not add up',
+      es: 'Tus números no cuadran',
+      de: 'Deine Zahlen stimmen nicht überein',
     },
     body: {
-      en: 'Real-time flows, APIs and client applications each believe something different about the same record, and support is absorbing the difference.',
-      es: 'Los flujos en tiempo real, las APIs y las aplicaciones cliente creen cosas distintas sobre el mismo registro, y soporte está absorbiendo la diferencia.',
-      de: 'Echtzeit-Flows, APIs und Clients glauben Unterschiedliches über denselben Datensatz — und der Support fängt die Differenz auf.',
+      en: 'The app says one thing, the website says another, and your team is spending hours every week manually checking which one is actually right.',
+      es: 'La app dice una cosa, la web dice otra, y tu equipo pasa horas cada semana comprobando a mano cuál de las dos es la correcta.',
+      de: 'Die App zeigt etwas anderes an als die Website, und dein Team verbringt jede Woche Stunden damit, von Hand herauszufinden, welche Zahl eigentlich stimmt.',
     },
   },
   {
     id: 'independent-plan',
     label: {
-      en: 'A plan before the spend',
-      es: 'Un plan antes del gasto',
-      de: 'Ein Plan vor der Investition',
+      en: 'You want a second opinion before spending',
+      es: 'Quieres una segunda opinión antes de gastar',
+      de: 'Du willst eine zweite Meinung, bevor du investierst',
     },
     body: {
-      en: 'A larger build is on the table and you want an independent technical read on scope, sequence and risk before committing the budget.',
-      es: 'Hay un desarrollo mayor sobre la mesa y quieres una lectura técnica independiente del alcance, la secuencia y el riesgo antes de comprometer el presupuesto.',
-      de: 'Ein größeres Vorhaben steht an, und ihr wollt eine unabhängige technische Einschätzung zu Umfang, Reihenfolge und Risiko, bevor das Budget gebunden wird.',
+      en: 'You are about to invest in a big piece of software and want an outside expert to check the plan first — before you commit the budget.',
+      es: 'Estás a punto de invertir en un desarrollo grande y quieres que un experto externo revise el plan antes — antes de comprometer el presupuesto.',
+      de: 'Du stehst kurz davor, in ein größeres Software-Projekt zu investieren, und willst vorher eine externe, unabhängige Einschätzung — bevor das Budget gebunden wird.',
     },
   },
 ];
