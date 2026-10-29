@@ -40,16 +40,19 @@ export default defineConfig({
   },
 
   /*
-   * /<lang>/agents was renamed to /<lang>/capabilities — "the roster" sold a
-   * team of six that does not exist, and the URL carried the same claim. The
-   * old paths keep resolving so any link already shared does not 404. Static
-   * output means these are meta-refresh stubs rather than 301s; they are
-   * excluded from the sitemap below so only the new URL is submitted.
+   * /<lang>/agents (then /capabilities) described a service catalogue the site
+   * no longer sells. Both old paths keep resolving so shared links do not 404;
+   * they land on the solutions section. Static output means these are
+   * meta-refresh stubs rather than 301s, and the sitemap filter below excludes
+   * them so only live pages are submitted.
    */
   redirects: {
-    '/en/agents': '/en/capabilities/',
-    '/es/agents': '/es/capabilities/',
-    '/de/agents': '/de/capabilities/',
+    '/en/agents': '/en/',
+    '/es/agents': '/es/',
+    '/de/agents': '/de/',
+    '/en/capabilities': '/en/',
+    '/es/capabilities': '/es/',
+    '/de/capabilities': '/de/',
   },
 
   integrations: [
@@ -81,6 +84,7 @@ export default defineConfig({
         // sitemap, and submitting both would offer a crawler two URLs for one
         // page and let it pick the deprecated one.
         !page.includes('/agents') &&
+        !page.includes('/capabilities') &&
         page.replace(/\/+$/, '') !==
           `${SITE_ORIGIN}${BASE}`.replace(/\/+$/, ''),
     }),

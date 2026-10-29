@@ -11,11 +11,13 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 const year = new Date().getFullYear();
 
+const home = localizePath(lang);
 const siteLinks = [
-  { href: localizePath(lang, 'work'), label: t('nav.work') },
-  { href: `${localizePath(lang)}#offers`, label: t('nav.offers') },
-  { href: localizePath(lang, 'capabilities'), label: t('nav.capabilities') },
-  { href: localizePath(lang, 'contact'), label: t('nav.contact') },
+  { href: `${home}#solutions`, label: t('nav.solutions') },
+  { href: `${home}#how-it-works`, label: t('nav.howItWorks') },
+  { href: `${home}#experience`, label: t('nav.experience') },
+  { href: `${home}#about`, label: t('nav.about') },
+  { href: `${home}#contact`, label: t('nav.contact') },
 ];
 
 /*

@@ -12,17 +12,13 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const home = localizePath(lang);
-/*
- * Real pages, not fragments, for work and capabilities: both now hold enough to
- * be worth their own URL, and a nav that scrolls a visitor down the landing
- * page cannot be linked to, shared, or ranked. `#offers` stays an anchor —
- * pricing shapes belong in the flow of the pitch, not on a page of their own.
- */
+/* Anchors on the landing page; the section ids live in [lang]/index.astro. */
 const links = [
-  { href: localizePath(lang, 'work'), label: t('nav.work') },
-  { href: `${home}#offers`, label: t('nav.offers') },
-  { href: localizePath(lang, 'capabilities'), label: t('nav.capabilities') },
-  { href: localizePath(lang, 'contact'), label: t('nav.contact') },
+  { href: `${home}#solutions`, label: t('nav.solutions') },
+  { href: `${home}#how-it-works`, label: t('nav.howItWorks') },
+  { href: `${home}#experience`, label: t('nav.experience') },
+  { href: `${home}#about`, label: t('nav.about') },
+  { href: `${home}#contact`, label: t('nav.contact') },
 ];
 ---
 
@@ -59,7 +55,7 @@ const links = [
       </div>
       <ThemeToggle lang={lang} />
       <a
-        href={localizePath(lang, 'contact')}
+        href={`${home}#contact`}
         class="btn-primary hidden !px-4 !py-2 sm:inline-flex"
       >
         {t('nav.cta')}

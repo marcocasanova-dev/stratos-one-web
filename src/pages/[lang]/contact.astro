@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import SectionHeading from '@components/SectionHeading.astro';
+import ContactForm from '@components/ContactForm.astro';
 import { SITE, PRINCIPAL } from '@/config';
 import { languages, useTranslations, type Lang } from '@i18n/utils';
 
@@ -13,20 +14,7 @@ export function getStaticPaths() {
 const lang = Astro.params.lang as Lang;
 const t = useTranslations(lang);
 
-/*
- * Subject prefilled, body deliberately not. A mailto with a body parameter puts
- * whatever it contains into a URL, into browser history and into the referrer
- * chain — which is exactly where a description of a production incident should
- * not go. The four prompts below are rendered as page content instead.
- */
 const mailto = `mailto:${SITE.email}?subject=${encodeURIComponent(t('contact.emailSubject'))}`;
-
-const prompts = [
-  t('contact.prompt1'),
-  t('contact.prompt2'),
-  t('contact.prompt3'),
-  t('contact.prompt4'),
-];
 
 const channels = [
   {
@@ -46,10 +34,8 @@ const channels = [
   {
     title: t('contact.principalTitle'),
     desc: t('contact.principalDesc'),
-    // The portfolio site runs the same three locales, so send the visitor to
-    // theirs rather than dropping them on its English root.
-    href: `${SITE.portfolio}/${lang}`,
-    cta: t('principal.viewPortfolio'),
+    href: `${SITE.portfolio}/${lang}/`,
+    cta: t('founder.link'),
     external: true,
   },
 ];
@@ -70,7 +56,6 @@ const channels = [
     </div>
 
     <div class="container-page py-16 md:py-24">
-      {/* level={1}: this page also shipped with no <h1> in any locale. */}
       <SectionHeading
         level={1}
         eyebrow={t('nav.contact')}
@@ -78,25 +63,8 @@ const channels = [
         sub={t('contact.sub')}
       />
 
-      {/*
-        A template for the first message. "Describe the problem" is advice; four
-        questions are something a busy CTO can answer in four lines on a phone,
-        which is the difference between an enquiry and an intention to send one.
-      */}
-      <div class="mt-10 max-w-2xl rounded-xl border border-subtle bg-sunken p-6">
-        <p class="eyebrow">{t('contact.promptTitle')}</p>
-        <ol class="mt-4 space-y-2.5">
-          {
-            prompts.map((prompt, i) => (
-              <li class="flex gap-3 text-sm text-secondary">
-                <span class="font-mono text-[var(--accent)]" aria-hidden="true">
-                  {i + 1}.
-                </span>
-                <span class="leading-relaxed">{prompt}</span>
-              </li>
-            ))
-          }
-        </ol>
+      <div class="surface-card mt-10 max-w-3xl p-6 md:p-8">
+        <ContactForm lang={lang} />
       </div>
 
       <div class="mt-12 grid gap-5 md:grid-cols-3">

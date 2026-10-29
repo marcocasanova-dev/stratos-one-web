@@ -1,6 +1,5 @@
 ---
-import { PROOF } from '@/config';
-import { localizePath, useTranslations, type Lang } from '@i18n/utils';
+import { useTranslations, type Lang } from '@i18n/utils';
 
 interface Props {
   lang: Lang;
@@ -47,41 +46,11 @@ const t = useTranslations(lang);
     </p>
 
     <div class="mt-9 flex flex-wrap items-center gap-3">
-      <a href={localizePath(lang, 'contact')} class="btn-primary">
+      <a href="#contact" class="btn-primary">
         {t('hero.ctaPrimary')}
         <span aria-hidden="true">→</span>
       </a>
-      <a href="#work" class="btn-secondary">{t('hero.ctaSecondary')}</a>
+      <a href="#example" class="btn-secondary">{t('hero.ctaSecondary')}</a>
     </div>
-
-    {/*
-      Was a strip of six agent chips. A buyer arriving cold cannot choose an
-      agent before they know what is sold, so the space now goes to the stack
-      and the geography — the two facts that decide fit fastest.
-    */}
-    <p class="mt-10 font-mono text-sm text-muted">{t('hero.proofLine')}</p>
-
-    <dl
-      class="mt-10 grid gap-6 border-t border-subtle pt-9 sm:grid-cols-3 sm:gap-8"
-    >
-      {
-        PROOF.map((stat) => (
-          <div>
-            <dt class="sr-only">{stat.label[lang]}</dt>
-            <dd>
-              <span class="font-mono text-4xl font-bold tracking-tight">
-                {stat.value}
-              </span>
-              <p class="mt-1.5 text-sm font-semibold">{stat.label[lang]}</p>
-              <p class="mt-1.5 text-sm leading-relaxed text-muted">
-                {stat.detail[lang]}
-              </p>
-            </dd>
-          </div>
-        ))
-      }
-    </dl>
-
-    <p class="mt-8 text-sm text-muted">{t('hero.note')}</p>
   </div>
 </section>

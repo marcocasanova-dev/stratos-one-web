@@ -69,9 +69,9 @@ const serviceSchema: Record<string, unknown> = {
   email: SITE.email,
   areaServed: ['DE', 'AT', 'EU'],
   serviceType: [
-    'Software architecture consulting',
-    'Web and mobile product engineering',
-    'Data platform and API engineering',
+    'AI agent development',
+    'Business process automation',
+    'Software integration',
   ],
   address: {
     '@type': 'PostalAddress',
@@ -89,14 +89,14 @@ const serviceSchema: Record<string, unknown> = {
 };
 
 /*
- * The three engagements, and only on the landing page. No `price` is emitted:
+ * The four engagements, and only on the landing page. No `price` is emitted:
  * the offers carry `price: null` until the owner confirms rates, and an
  * invented priceRange in structured data is a quote made by a template.
  */
 if (offerCatalog) {
   serviceSchema.hasOfferCatalog = {
     '@type': 'OfferCatalog',
-    name: t('offers.eyebrow'),
+    name: t('packages.eyebrow'),
     itemListElement: offers.map((offer) => ({
       '@type': 'Offer',
       itemOffered: {

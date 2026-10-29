@@ -1,0 +1,174 @@
+---
+import { SITE } from '@/config';
+import { useTranslations, type Lang } from '@i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+/*
+ * ── What this form does, and what it does not ───────────────────────────────
+ * There is no submission backend, and none may be implied. Submitting builds an
+ * email draft in the visitor's own mail app and says so; the visitor sends it.
+ * The status line therefore never claims delivery. Replace this with a real
+ * endpoint only once one exists and has been verified, and update the privacy
+ * notice in the same change.
+ *
+ * Without JavaScript the form falls back to a plain mailto action, so it still
+ * works — it just skips the inline validation.
+ */
+const fields = [
+  { name: 'name', label: t('contact.name'), type: 'text', autocomplete: 'name', required: true },
+  { name: 'email', label: t('contact.email'), type: 'email', autocomplete: 'email', required: true },
+  { name: 'company', label: t('contact.company'), type: 'text', autocomplete: 'organization', required: true },
+] as const;
+
+const messages = {
+  required: t('contact.errorRequired'),
+  email: t('contact.errorEmail'),
+  summary: t('contact.errorSummary'),
+  opened: t('contact.opened'),
+  subject: t('contact.emailSubject'),
+  labels: {
+    name: t('contact.name'),
+    email: t('contact.email'),
+    company: t('contact.company'),
+    workflow: t('contact.workflow'),
+    tools: t('contact.tools'),
+  },
+};
+---
+
+<form
+  id="workflow-form"
+  class="space-y-5"
+  action={`mailto:${SITE.email}`}
+  method="post"
+  enctype="text/plain"
+  data-address={SITE.email}
+  data-messages={JSON.stringify(messages)}
+>
+  <div class="grid gap-5 sm:grid-cols-2">
+    {
+      fields.map((f) => (
+        <div class:list={[f.name === 'company' && 'sm:col-span-2']}>
+          <label for={`wf-${f.name}`} class="field-label">
+            {f.label}
+          </label>
+          <input
+            id={`wf-${f.name}`}
+            name={f.name}
+            type={f.type}
+            autocomplete={f.autocomplete}
+            required={f.required}
+            class="field"
+            aria-describedby={`wf-${f.name}-error`}
+          />
+          <p id={`wf-${f.name}-error`} class="field-error" hidden />
+        </div>
+      ))
+    }
+  </div>
+
+  <div>
+    <label for="wf-workflow" class="field-label">{t('contact.workflow')}</label>
+    <textarea
+      id="wf-workflow"
+      name="workflow"
+      rows="4"
+      required
+      class="field"
+      aria-describedby="wf-workflow-error"></textarea>
+    <p id="wf-workflow-error" class="field-error" hidden></p>
+  </div>
+
+  <div>
+    <label for="wf-tools" class="field-label">
+      {t('contact.tools')}
+      <span class="font-normal text-muted"> ({t('contact.optional')})</span>
+    </label>
+    <input id="wf-tools" name="tools" type="text" class="field" />
+  </div>
+
+  <div class="flex flex-wrap items-center gap-4">
+    <button type="submit" class="btn-primary">
+      {t('contact.submit')}
+      <span aria-hidden="true">→</span>
+    </button>
+    <p class="max-w-md text-sm leading-relaxed text-muted">
+      {t('contact.formNote')}
+    </p>
+  </div>
+
+  <p id="workflow-form-status" class="text-sm leading-relaxed text-secondary" role="status" tabindex="-1"></p>
+</form>
+
+<script>
+  const form = document.getElementById('workflow-form') as HTMLFormElement | null;
+  const status = document.getElementById('workflow-form-status');
+
+  if (form && status) {
+    const messages = JSON.parse(form.dataset.messages ?? '{}');
+    const address = form.dataset.address ?? '';
+    form.noValidate = true;
+
+    const names = ['name', 'email', 'company', 'workflow'] as const;
+    const field = (n: string) =>
+      form.elements.namedItem(n) as HTMLInputElement | HTMLTextAreaElement;
+    const errorEl = (n: string) => document.getElementById(`wf-${n}-error`)!;
+
+    function validate(n: (typeof names)[number]): string {
+      const el = field(n);
+      const value = el.value.trim();
+      if (!value) return messages.required;
+      if (n === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return messages.email;
+      return '';
+    }
+
+    function show(n: (typeof names)[number]): boolean {
+      const message = validate(n);
+      const el = errorEl(n);
+      el.textContent = message;
+      el.hidden = !message;
+      field(n).setAttribute('aria-invalid', String(Boolean(message)));
+      return !message;
+    }
+
+    names.forEach((n) => field(n).addEventListener('blur', () => show(n)));
+    names.forEach((n) =>
+      field(n).addEventListener('input', () => {
+        if (field(n).getAttribute('aria-invalid') === 'true') show(n);
+      })
+    );
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      status.textContent = '';
+      const results = names.map((n) => [n, show(n)] as const);
+      const firstBad = results.find(([, ok]) => !ok);
+      if (firstBad) {
+        status.textContent = messages.summary;
+        field(firstBad[0]).focus();
+        return;
+      }
+
+      const lines = [
+        `${messages.labels.name}: ${field('name').value.trim()}`,
+        `${messages.labels.email}: ${field('email').value.trim()}`,
+        `${messages.labels.company}: ${field('company').value.trim()}`,
+        '',
+        `${messages.labels.workflow}:`,
+        field('workflow').value.trim(),
+        '',
+        `${messages.labels.tools}: ${(form.elements.namedItem('tools') as HTMLInputElement).value.trim()}`,
+      ];
+      const href = `mailto:${address}?subject=${encodeURIComponent(messages.subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
+      window.location.href = href;
+      // Opening a draft is not delivery, so say exactly that and nothing more.
+      status.textContent = `${messages.opened} ${address}`;
+    });
+  }
+</script>

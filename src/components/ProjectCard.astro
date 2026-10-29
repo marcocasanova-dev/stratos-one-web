@@ -27,6 +27,9 @@ const href = `${SITE.portfolio}/${lang}/work/${project.slug}`;
 // "NIGHTOWL") is noise, so it is dropped rather than deduplicated by hand in
 // the data — the rule holds for entries added later too.
 const client = project.client === project.title ? undefined : project.client;
+const relationship = project.relationship
+  ? t(`experience.${project.relationship}` as const)
+  : undefined;
 const eyebrow = [client, project.year].filter(Boolean).join(' · ');
 ---
 
@@ -47,6 +50,8 @@ const eyebrow = [client, project.year].filter(Boolean).join(' · ');
   <h3 class="mt-3 text-lg leading-tight font-bold tracking-tight text-balance">
     {project.title}
   </h3>
+
+  {relationship && <p class="mt-2 text-xs text-muted">{relationship}</p>}
 
   <p class="mt-4 text-sm leading-relaxed text-secondary">
     {project.summary[lang]}

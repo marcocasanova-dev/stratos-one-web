@@ -6,8 +6,8 @@ import type { Lang } from '@i18n/utils';
  * ── What is safe to write here, and what is not ─────────────────────────────
  * Everything below describes how THIS site actually behaves, and every sentence
  * is checkable against the source: there is no analytics script, no cookie is
- * set, no font or asset is fetched from a third-party host, there is no contact
- * form, and the only thing written to the browser is the theme preference in
+ * set, no font or asset is fetched from a third-party host, the contact form only prepares an
+ * email draft in the visitor's own mail app and transmits nothing, and the only thing written to the browser is the theme preference in
  * localStorage (see BaseLayout.astro and ThemeToggle.astro).
  *
  * Identity, address and VAT number are NOT here — they are owner-supplied and
@@ -19,7 +19,7 @@ import type { Lang } from '@i18n/utils';
  */
 
 /** Publication date of the current legal text. Absolute, never "today". */
-export const LEGAL_UPDATED = '2026-08-13';
+export const LEGAL_UPDATED = '2026-10-25';
 
 /** The deployment target, named because the privacy notice has to name it. */
 export const HOSTING_PROVIDER = {
@@ -94,15 +94,15 @@ export const privacySections: LegalSection[] = [
     },
     body: {
       en: [
-        'There is no contact form on this site. If you write to the address given in the imprint, your message and the data it contains are processed solely in order to answer it and to handle any resulting engagement.',
+        'The contact form on this site does not send anything itself. When you submit it, your browser opens a draft in your own email app, pre-filled with what you typed (name, work email, company, workflow description and tools). Nothing reaches us until you send that email, and the form data is not stored on this site or by any service we operate. If you write to the address given in the imprint, your message and the data it contains are processed solely in order to answer it and to handle any resulting engagement. Please do not include sensitive personal data.',
         'The legal basis is Art. 6 (1) (b) GDPR where the message concerns a possible contract, and otherwise Art. 6 (1) (f) GDPR. Correspondence is kept for as long as needed to deal with the matter and to meet statutory retention periods.',
       ],
       es: [
-        'Esta web no tiene formulario de contacto. Si escribes a la dirección indicada en el aviso legal, tu mensaje y los datos que contenga se tratan únicamente para responderlo y para gestionar la posible colaboración que se derive.',
+        'El formulario de contacto de esta web no envía nada por sí mismo. Al enviarlo, tu navegador abre un borrador en tu propia aplicación de correo, rellenado con lo que has escrito (nombre, correo de trabajo, empresa, descripción del flujo de trabajo y herramientas). No nos llega nada hasta que envías ese correo, y los datos del formulario no se almacenan en esta web ni en ningún servicio que operemos. Si escribes a la dirección indicada en el aviso legal, tu mensaje y los datos que contenga se tratan únicamente para responderlo y para gestionar la posible colaboración que se derive. Por favor, no incluyas datos personales sensibles.',
         'La base jurídica es el art. 6.1.b del RGPD cuando el mensaje se refiere a un posible contrato, y en los demás casos el art. 6.1.f. La correspondencia se conserva el tiempo necesario para atender el asunto y cumplir los plazos legales de conservación.',
       ],
       de: [
-        'Diese Seite hat kein Kontaktformular. Wenn du an die im Impressum genannte Adresse schreibst, werden deine Nachricht und die darin enthaltenen Daten ausschließlich verarbeitet, um sie zu beantworten und eine daraus entstehende Zusammenarbeit abzuwickeln.',
+        'Das Kontaktformular auf dieser Seite sendet selbst nichts. Wenn du es abschickst, öffnet dein Browser einen Entwurf in deiner eigenen E-Mail-App, vorausgefüllt mit deinen Eingaben (Name, geschäftliche E-Mail, Unternehmen, Beschreibung des Workflows und Werkzeuge). Bei uns kommt erst etwas an, wenn du diese E-Mail absendest; die Formulardaten werden weder auf dieser Seite noch bei einem von uns betriebenen Dienst gespeichert. Wenn du an die im Impressum genannte Adresse schreibst, werden deine Nachricht und die darin enthaltenen Daten ausschließlich verarbeitet, um sie zu beantworten und eine daraus entstehende Zusammenarbeit abzuwickeln. Bitte gib keine sensiblen personenbezogenen Daten an.',
         'Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, soweit die Nachricht einen möglichen Vertrag betrifft, im Übrigen Art. 6 Abs. 1 lit. f DSGVO. Die Korrespondenz wird so lange aufbewahrt, wie es zur Bearbeitung und zur Einhaltung gesetzlicher Aufbewahrungsfristen erforderlich ist.',
       ],
     },

@@ -50,6 +50,12 @@ export interface Project {
   year: number;
   /** Lower sorts first. Mirrors the ordering on the portfolio site. */
   order: number;
+  /**
+   * In what capacity Marco worked on it. Optional: left unset where it has not
+   * been confirmed, in which case the card shows no label rather than a guess.
+   * Only 'independent' work may be presented as Stratos One's own.
+   */
+  relationship?: 'contractor' | 'employee' | 'independent';
   /** Base hue in OKLCH. Shares L/C with the agent cards so both grids read as one system. */
   hue: number;
   sectors: Sector[];
@@ -86,6 +92,7 @@ export const projects: Project[] = [
   {
     slug: 'stratos-one',
     title: 'Stratos One',
+    relationship: 'independent',
     year: 2025,
     order: 0.5,
     hue: 193,
@@ -117,6 +124,7 @@ export const projects: Project[] = [
   {
     slug: 'mobile-commerce-platform',
     title: 'Mobile Commerce Platform',
+    relationship: 'independent',
     year: 2026,
     order: 1,
     hue: 28,
@@ -146,6 +154,7 @@ export const projects: Project[] = [
     slug: 'nightowl',
     title: 'NIGHTOWL',
     client: 'NIGHTOWL',
+    relationship: 'independent',
     year: 2025,
     order: 1.5,
     hue: 285,
@@ -174,6 +183,7 @@ export const projects: Project[] = [
     slug: 'kin-relay',
     title: 'Kin Relay',
     client: 'Stratos One',
+    relationship: 'independent',
     year: 2025,
     order: 1.6,
     hue: 268,
@@ -204,6 +214,7 @@ export const projects: Project[] = [
     slug: 'raumhub',
     title: 'RaumHub',
     client: 'Stratos One',
+    relationship: 'independent',
     year: 2025,
     order: 1.7,
     hue: 235,
@@ -232,6 +243,7 @@ export const projects: Project[] = [
     slug: 'iot-data-platform',
     title: 'IoT Telemetry Platform',
     client: 'Kewazo',
+    relationship: 'independent',
     year: 2024,
     order: 2,
     hue: 152,
@@ -260,6 +272,7 @@ export const projects: Project[] = [
   {
     slug: 'clinical-data-analyzer',
     title: 'Clinical Data Analysis Platform',
+    relationship: 'contractor',
     year: 2024,
     order: 3,
     hue: 205,
@@ -289,6 +302,7 @@ export const projects: Project[] = [
     slug: 'viamor-dating',
     title: 'Viamor',
     client: 'Viamor',
+    relationship: 'independent',
     year: 2023,
     order: 4,
     hue: 340,
@@ -316,6 +330,7 @@ export const projects: Project[] = [
   {
     slug: 'bavarian-defence',
     title: 'Bavarian Defence',
+    relationship: 'independent',
     year: 2023,
     order: 5,
     hue: 88,
